@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "ailink")(type "KiCad")(uri "${KIPRJMOD}/lib/ailink.kicad_sym")(options "")(descr "ailink project symbols"))
+)

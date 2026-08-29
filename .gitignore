@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# KiCad：本地设置、缓存、备份、自动保存（不必入库）
+*.kicad_prl
+fp-info-cache
+*.bak
+*-bak
+*-bak*
+*.bck
+*-backups/
+_autosave-*
+\#auto_saved_files\#
+~*.lck
+*.tmp
+.history
+
+# 网表 / 自动布线中间文件
+*.dsn
+*.ses
+*.net
+
+# 导出的 BOM / 制造与预览产物
+*.xml
+*.csv
+outputs/
+
+# 第三方二进制（自行下载到 tools/）
+tools/*.jar
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+*~
+*.swp
