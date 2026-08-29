@@ -9,6 +9,7 @@
 import heapq
 import math
 import os
+import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -109,13 +110,22 @@ class Grid:
         return not self.blocked[layer][c[0]][c[1]]
 
     def via_ok(self, c):
-        """Via needs room on both layers plus hole spacing."""
+        """Via needs room on both layers plus hole spacing.
+
+        blocked[] is already inflated by track-half + clearance, so we only
+        need extra neighbourhood for the via being fatter than a track.
+        """
+        if not (0 <= c[0] < NX and 0 <= c[1] < NY):
+            return False
         if self.via_bad[c[0]][c[1]]:
             return False
-        ring = max(1, int(math.ceil(0.22 / STEP)))
+        extra = max(1, int(math.ceil((VIA_D - TRACK_W) / 2.0 / STEP)))
+        r2 = extra * extra + 1
         for layer in (F, B):
-            for di in range(-ring, ring + 1):
-                for dj in range(-ring, ring + 1):
+            for di in range(-extra, extra + 1):
+                for dj in range(-extra, extra + 1):
+                    if di * di + dj * dj > r2:
+                        continue
                     i, j = c[0] + di, c[1] + dj
                     if not (0 <= i < NX and 0 <= j < NY):
                         return False
@@ -124,7 +134,20 @@ class Grid:
         return True
 
 
-HARD_NETS = ("GND", "+3V3", "USB_DP", "USB_DM")
+HARD_NETS = ("GND", "+3V3", "USB_DP", "USB_DM",
+             "OSC_IN", "OSC_XO", "OSC_OUT", "NRST", "MCU_SWDIO")
+MCU_CX, MCU_CY = 128.5, 118.0
+
+
+def via_dia(t):
+    """KiCad 10: PCB_VIA.GetWidth() requires a layer and spams asserts."""
+    return pc.to_mm(t.GetFrontWidth())
+
+
+def track_w(t):
+    if t.GetClass() == "PCB_VIA":
+        return via_dia(t)
+    return pc.to_mm(t.GetWidth())
 
 
 def build_grid(board, skip_nets, soft_signals=False):
@@ -140,7 +163,7 @@ def build_grid(board, skip_nets, soft_signals=False):
             if px < X0 + 0.55 or px > X1 - 0.55 or py < Y0 + 0.55 or py > Y1 - 0.55:
                 g.blocked[F][i][j] = 1
                 g.blocked[B][i][j] = 1
-    for t in board.GetTracks():
+    for t in all_tracks(board):
         net = t.GetNetname()
         if net in skip_nets:
             continue
@@ -148,7 +171,7 @@ def build_grid(board, skip_nets, soft_signals=False):
                     and not net.startswith("unconnected"))
         if t.GetClass() == "PCB_VIA":
             x, y = pc.to_mm(t.GetPosition().x), pc.to_mm(t.GetPosition().y)
-            r = pc.to_mm(t.GetWidth()) / 2 + margin
+            r = via_dia(t) / 2 + margin
             if rippable:
                 g.soft_disc(F, x, y, r, net)
                 g.soft_disc(B, x, y, r, net)
@@ -197,6 +220,42 @@ def build_grid(board, skip_nets, soft_signals=False):
                 continue
             for layer in layers:
                 g.block_rect(layer, x, y, hw, hh, margin)
+    # Rule areas (keepouts): A* otherwise ignores them and re-enters.
+    for z in board.Zones():
+        if not z.GetIsRuleArea():
+            continue
+        ban_trk = z.GetDoNotAllowTracks()
+        ban_via = z.GetDoNotAllowVias()
+        if not (ban_trk or ban_via):
+            continue
+        layers = []
+        if z.IsOnLayer(pcbnew.F_Cu):
+            layers.append(F)
+        if z.IsOnLayer(pcbnew.B_Cu):
+            layers.append(B)
+        if not layers:
+            continue
+        try:
+            bb = z.GetBoundingBox()
+            x0 = pc.to_mm(bb.GetLeft())
+            y0 = pc.to_mm(bb.GetTop())
+            x1 = pc.to_mm(bb.GetRight())
+            y1 = pc.to_mm(bb.GetBottom())
+        except Exception:
+            continue
+        pad = TRACK_W / 2 + CLR
+        if ban_trk:
+            for layer in layers:
+                g.block_rect(layer, (x0 + x1) / 2, (y0 + y1) / 2,
+                             (x1 - x0) / 2, (y1 - y0) / 2, pad)
+        if ban_via:
+            c0 = cell(x0 - 0.3, y0 - 0.3)
+            c1 = cell(x1 + 0.3, y1 + 0.3)
+            for i in range(max(0, c0[0]), min(NX, c1[0] + 1)):
+                for j in range(max(0, c0[1]), min(NY, c1[1] + 1)):
+                    px, py = coord((i, j))
+                    if x0 - 0.15 <= px <= x1 + 0.15 and y0 - 0.15 <= py <= y1 + 0.15:
+                        g.via_bad[i][j] = 1
     return g
 
 
@@ -220,7 +279,9 @@ def astar(g, starts, goals):
         return min(abs(n[1] - a) + abs(n[2] - b) for a, b in gxy) * 0.9
 
     soft = g.soft
-    soft_cost = 9.0
+    # cheap enough to cross a blocker rather than wander forever, expensive
+    # enough to prefer a free 2 mm detour over ripping a net
+    soft_cost = 6.0
     while openq:
         f, node, parent = heapq.heappop(openq)
         if node in seen:
@@ -248,7 +309,7 @@ def astar(g, starts, goals):
         # via
         if g.via_ok((ci, cj)):
             nn = (1 - layer, ci, cj)
-            ng = base + 14
+            ng = base + 12
             if nn not in gx or ng < gx[nn] - 1e-9:
                 gx[nn] = ng
                 heapq.heappush(openq, (ng + h(nn), nn, node))
@@ -311,8 +372,35 @@ def add_route(board, netname, segs, vias):
         board.Add(v)
 
 
+def _pad_hw_hh(pad):
+    sz = pad.GetSize(pcbnew.PADSTACK.ALL_LAYERS)
+    hw = pc.to_mm(sz.x) / 2
+    hh = pc.to_mm(sz.y) / 2
+    rot = pad.GetOrientationDegrees() % 180
+    if abs(rot - 90) < 45:
+        hw, hh = hh, hw
+    return hw, hh
+
+
+def pad_escape(x, y, hw, hh):
+    """Start just beyond an LQFP pad tip, away from the MCU body.
+
+    Adjacent 0.5 mm-pitch pads inflate each other into a keep-out sausage;
+    routing from the pad centre therefore dies.  Escaping along the long
+    axis lands in the west / south / north channel.
+    """
+    # only LQFP-style needles (1.55×0.30), never 0402 (0.80×0.95)
+    if max(hw, hh) < 0.55 or max(hw, hh) / max(min(hw, hh), 0.01) < 2.5:
+        return (x, y)
+    if hw >= hh:
+        sign = -1.0 if x < MCU_CX else 1.0
+        return (round(x + sign * (hw + 0.38), 3), y)
+    sign = -1.0 if y < MCU_CY else 1.0
+    return (x, round(y + sign * (hh + 0.38), 3))
+
+
 def pad_cells(board, netname):
-    """All pads of net -> list of (layer,ci,cj) node seeds + stub info."""
+    """All pads of net -> list of (node, escape_xy, pad_xy)."""
     seeds = []
     for fp in board.GetFootprints():
         for pad in fp.Pads():
@@ -320,31 +408,61 @@ def pad_cells(board, netname):
                 continue
             pos = pad.GetPosition()
             x, y = pc.to_mm(pos.x), pc.to_mm(pos.y)
-            c = cell(x, y)
+            hw, hh = _pad_hw_hh(pad)
+            ex, ey = pad_escape(x, y, hw, hh)
+            c = cell(ex, ey)
             if pad.GetAttribute() == pcbnew.PAD_ATTRIB_SMD:
                 layer = F if fp.GetLayer() == pcbnew.F_Cu else B
                 layers = [layer]
             else:
                 layers = [F, B]
             for l in layers:
-                seeds.append(((l, c[0], c[1]), (x, y)))
+                seeds.append(((l, c[0], c[1]), (ex, ey), (x, y)))
     return seeds
 
 
-def carve_seeds(grid, seeds):
-    """Free a small disc around each seed so the start cell is reachable."""
-    for (layer, ci, cj), (x, y) in seeds:
-        c0 = cell(x - 0.28, y - 0.28)
-        c1 = cell(x + 0.28, y + 0.28)
-        for i in range(max(0, c0[0]), min(NX, c1[0] + 1)):
-            for j in range(max(0, c0[1]), min(NY, c1[1] + 1)):
+def _carve_disc(grid, layer, x, y, r):
+    c0 = cell(x - r, y - r)
+    c1 = cell(x + r, y + r)
+    r2 = r * r
+    for i in range(max(0, c0[0]), min(NX, c1[0] + 1)):
+        for j in range(max(0, c0[1]), min(NY, c1[1] + 1)):
+            px, py = coord((i, j))
+            if (px - x) ** 2 + (py - y) ** 2 <= r2:
                 grid.blocked[layer][i][j] = 0
+
+
+def carve_seeds(grid, seeds):
+    """Unblock a capsule from pad centre to the escape tip (not a big disc)."""
+    for (layer, ci, cj), esc, pad in seeds:
+        x1, y1 = pad
+        x2, y2 = esc
+        length = math.dist((x1, y1), (x2, y2))
+        n = max(1, int(length / max(STEP / 2, 0.03)))
+        for k in range(n + 1):
+            t = k / n
+            _carve_disc(grid, layer,
+                        x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, 0.20)
+
+
+def seed_nodes(grid, node):
+    """A small cloud of free cells around a seed so A* can leave the pad."""
+    layer, ci, cj = node
+    out = set()
+    for di in range(-2, 3):
+        for dj in range(-2, 3):
+            i, j = ci + di, cj + dj
+            if 0 <= i < NX and 0 <= j < NY and not grid.blocked[layer][i][j]:
+                out.add((layer, i, j))
+    if not out:
+        out.add(node)
+    return out
 
 
 def net_copper_nodes(board, netname):
     """Existing same-net tracks/vias as graph nodes (they are live copper)."""
     nodes = set()
-    for t in board.GetTracks():
+    for t in all_tracks(board):
         if t.GetNetname() != netname:
             continue
         if t.GetClass() == "PCB_VIA":
@@ -363,45 +481,75 @@ def net_copper_nodes(board, netname):
 def route_net(board, grid, netname):
     seeds = pad_cells(board, netname)
     if len(seeds) < 2:
-        print(f"{netname}: less than 2 pads?")
+        print(f"{netname}: less than 2 pads?", flush=True)
         return True
-    # pads that already have copper attached go first (their stubs/vias
-    # become part of the target cluster instead of needing a fresh leg)
     copper = net_copper_nodes(board, netname)
 
     def has_copper(seed):
-        (l, ci, cj), _ = seed
+        (l, ci, cj), esc, pad = seed
         return any(abs(n[1] - ci) <= 2 and abs(n[2] - cj) <= 2 and n[0] == l
                    for n in copper)
     seeds.sort(key=lambda s: 0 if has_copper(s) else 1)
     carve_seeds(grid, seeds)
     done_nodes = set(copper)
-    stubs = {}
     first = seeds[0]
-    done_nodes.add(first[0])
-    stubs[first[0]] = first[1]
+    done_nodes |= seed_nodes(grid, first[0])
     ok_all = True
     for k in range(1, len(seeds)):
         start = seeds[k]
-        path = astar(grid, {start[0]}, done_nodes)
+        starts = seed_nodes(grid, start[0])
+        path = astar(grid, starts, done_nodes)
         if path is None:
-            print(f"    leg FAILED: from {start[1]} (layer{start[0][0]})")
+            print(f"    leg FAILED: from {start[1]} (layer{start[0][0]})",
+                  flush=True)
             ok_all = False
             continue
         segs, vias = path_to_geometry(path)
         head = path[0]
         tail = path[-1]
-        segs = [(head[0], [start[1], coord((head[1], head[2]))])] + segs
-        if tail in stubs:
-            segs.append((tail[0], [coord((tail[1], tail[2])), stubs[tail]]))
+        # pad → escape → first grid cell (one polyline, no orphan stub)
+        head_pts = [start[2]]
+        if start[1] != start[2]:
+            head_pts.append(start[1])
+        head_pts.append(coord((head[1], head[2])))
+        segs = [(head[0], head_pts)] + segs
+        # Only stub to the first pad when the path actually ended next to it.
+        # A long F.Cu jump from a distant via to pad0 used to slash through U1.
+        tail_xy = coord((tail[1], tail[2]))
+        if math.dist(tail_xy, first[2]) < 2.5:
+            tail_pts = [tail_xy]
+            if first[1] != first[2]:
+                tail_pts.append(first[1])
+            tail_pts.append(first[2])
+            segs.append((tail[0], tail_pts))
         add_route(board, netname, segs, vias)
         for node in path:
             done_nodes.add(node)
     return ok_all
 
 
-def rip_net(board, netname):
-    doomed = [t for t in board.GetTracks() if t.GetNetname() == netname]
+def all_tracks(board):
+    """KiCad 10 SWIG: GetTracks() can decay to a non-iterable proxy."""
+    try:
+        ts = board.GetTracks()
+        return list(ts)
+    except TypeError:
+        pass
+    try:
+        return list(board.Tracks())
+    except TypeError:
+        out = []
+        t = board.GetTracks()
+        # last resort: index through TRACKS container
+        n = t.GetCount() if hasattr(t, "GetCount") else 0
+        for i in range(n):
+            out.append(t.Get(i) if hasattr(t, "Get") else t[i])
+        return out
+
+
+def rip_net(board, netname, tracks=None):
+    doomed = [t for t in (tracks if tracks is not None else all_tracks(board))
+              if t.GetNetname() == netname]
     for t in doomed:
         board.Remove(t)
 
@@ -428,7 +576,7 @@ def main(netnames):
                 nxt.append(netname)
             else:
                 # block the fresh copper for the remaining nets
-                for t in board.GetTracks():
+                for t in all_tracks(board):
                     if t.GetNetname() != netname:
                         continue
                     if t.GetClass() == "PCB_VIA":
@@ -443,7 +591,7 @@ def main(netnames):
                             layer,
                             pc.to_mm(t.GetStart().x), pc.to_mm(t.GetStart().y),
                             pc.to_mm(t.GetEnd().x), pc.to_mm(t.GetEnd().y),
-                            pc.to_mm(t.GetWidth()) / 2 + TRACK_W / 2 + CLR)
+                            track_w(t) / 2 + TRACK_W / 2 + CLR)
         pending = nxt
     if pending:
         print("STILL UNROUTED:", pending)
@@ -469,89 +617,225 @@ def _seg_pt_dist(a, b, p):
 
 
 def _seg_seg_dist(a1, a2, b1, b2):
-    return min(_seg_pt_dist(a1, a2, b1), _seg_pt_dist(a1, a2, b2),
+    """True 2D segment-segment distance (handles crossings)."""
+    ax, ay = a1
+    bx, by = a2
+    cx, cy = b1
+    dx, dy = b2
+    ux, uy = bx - ax, by - ay
+    vx, vy = dx - cx, dy - cy
+    wx, wy = ax - cx, ay - cy
+    uu = ux * ux + uy * uy
+    vv = vx * vx + vy * vy
+    uv = ux * vx + uy * vy
+    uw = ux * wx + uy * wy
+    vw = vx * wx + vy * wy
+    denom = uu * vv - uv * uv
+    if denom < 1e-18:
+        return min(_seg_pt_dist(a1, a2, b1), _seg_pt_dist(a1, a2, b2),
+                   _seg_pt_dist(b1, b2, a1), _seg_pt_dist(b1, b2, a2))
+    s = (uv * vw - vv * uw) / denom
+    t = (uu * vw - uv * uw) / denom
+    s = max(0.0, min(1.0, s))
+    t = max(0.0, min(1.0, t))
+    # clamp independently then snap to edges
+    p = (ax + s * ux, ay + s * uy)
+    q = (cx + t * vx, cy + t * vy)
+    # after independent clamp the pair may not be closest; also check ends
+    return min(math.dist(p, q),
+               _seg_pt_dist(a1, a2, b1), _seg_pt_dist(a1, a2, b2),
                _seg_pt_dist(b1, b2, a1), _seg_pt_dist(b1, b2, a2))
 
 
-def _net_items_geo(board, netname):
+def _net_items_geo(board, netname, tracks=None):
     out = []
-    for t in board.GetTracks():
+    for t in (tracks if tracks is not None else all_tracks(board)):
         if t.GetNetname() != netname:
             continue
         if t.GetClass() == "PCB_VIA":
-            p = (pc.to_mm(t.GetPosition().x), pc.to_mm(t.GetPosition().y))
-            out.append(("via", p, p, pc.to_mm(t.GetWidth()) / 2))
+            p = _pt_xy(t.GetPosition())
+            out.append(("via", p, p, via_dia(t) / 2))
         elif t.GetLayerName() in ("F.Cu", "B.Cu"):
-            s = (pc.to_mm(t.GetStart().x), pc.to_mm(t.GetStart().y))
-            e = (pc.to_mm(t.GetEnd().x), pc.to_mm(t.GetEnd().y))
+            s = _pt_xy(t.GetStart())
+            e = _pt_xy(t.GetEnd())
             out.append((t.GetLayerName(), s, e, pc.to_mm(t.GetWidth()) / 2))
     return out
 
 
-def ripup_route(netnames):
-    pending = list(netnames)
-    attempts = {}
-    for it in range(40):
-        if not pending:
+def fill_zones(board):
+    filler = pcbnew.ZONE_FILLER(board)
+    filler.Fill(board.Zones())
+
+
+def _pt_xy(p):
+    try:
+        return (pc.to_mm(p.x), pc.to_mm(p.y))
+    except AttributeError:
+        return (pc.to_mm(p.GetX()), pc.to_mm(p.GetY()))
+
+
+def _collect_signals(board):
+    out = set()
+    for nc in range(board.GetNetCount()):
+        net = board.FindNet(nc)
+        if net is None:
+            continue
+        nm = net.GetNetname()
+        if nm and nm not in HARD_NETS and not nm.startswith("unconnected"):
+            out.add(nm)
+    return out
+
+
+def ripup_one(netname, protect):
+    """Route one net in a fresh process, rip overlapping victims, save.
+
+    protect: net names treated as hard (not rippable) during soft search.
+    Prints a last line: RIPUP_RESULT ok=0|1 victims=a,b
+    """
+    global TRACK_W, HARD_NETS
+    TRACK_W = 0.15
+    extra_hard = tuple(p for p in protect if p and p != netname)
+    if extra_hard:
+        HARD_NETS = HARD_NETS + extra_hard
+    board = pcbnew.LoadBoard(pc.PCB)
+    signals = _collect_signals(board)
+    rip_net(board, netname)
+    routed = False
+    used_soft = False
+    for step, clr, soft in ((0.1, 0.162, False), (0.1, 0.162, True),
+                            (0.075, 0.158, True)):
+        set_step(step, clr)
+        grid = build_grid(board, skip_nets={netname}, soft_signals=soft)
+        ok = route_net(board, grid, netname)
+        print(f"    step={step} soft={soft}: "
+              f"{'OK' if ok else 'FAIL'}", flush=True)
+        if ok:
+            routed = True
+            used_soft = soft
             break
-        # fresh board object per iteration: avoids SWIG proxy decay
-        board = pcbnew.LoadBoard(pc.PCB)
-        all_signals = set()
-        for nc in range(board.GetNetCount()):
-            net = board.FindNet(nc)
-            if net is None:
+        rip_net(board, netname)
+    if not routed:
+        pcbnew.SaveBoard(pc.PCB, board)
+        print("RIPUP_RESULT ok=0 victims=", flush=True)
+        return 1
+    pcbnew.SaveBoard(pc.PCB, board)
+    board = pcbnew.LoadBoard(pc.PCB)
+    snap = all_tracks(board)
+    mine = _net_items_geo(board, netname, snap)
+    victims = set()
+    if used_soft:
+        by_net = {}
+        for t in snap:
+            by_net.setdefault(t.GetNetname(), []).append(t)
+        for other, items in by_net.items():
+            if other == netname or other in HARD_NETS:
                 continue
-            nm = net.GetNetname()
-            if nm and nm not in HARD_NETS \
-                    and not nm.startswith("unconnected"):
-                all_signals.add(nm)
-        n = pending.pop(0)
-        attempts[n] = attempts.get(n, 0) + 1
-        if attempts[n] > 4:
-            print(f"[ripup] giving up {n}")
-            continue
-        rip_net(board, n)
-        routed = False
-        for step, clr, soft in ((0.1, 0.155, False), (0.1, 0.155, True),
-                                (0.075, 0.152, True)):
-            set_step(step, clr)
-            grid = build_grid(board, skip_nets={n}, soft_signals=soft)
-            ok = route_net(board, grid, n)
-            if ok:
-                routed = True
-                break
-            rip_net(board, n)
-        if not routed:
-            print(f"[ripup] {n}: NO PATH even soft")
-            pcbnew.SaveBoard(pc.PCB, board)
-            continue
-        mine = _net_items_geo(board, n)
-        victims = set()
-        for other in all_signals:
-            if other == n:
+            if other not in signals:
                 continue
-            for o in _net_items_geo(board, other):
-                if other in victims:
-                    break
+            ogeo = _net_items_geo(board, other, items)
+            hit = False
+            for o in ogeo:
                 for m in mine:
                     lay_o, s1, e1, r1 = o
                     lay_m, s2, e2, r2 = m
                     if lay_o != lay_m and "via" not in (lay_o, lay_m):
                         continue
-                    if _seg_seg_dist(s1, e1, s2, e2) < r1 + r2 + 0.15:
+                    if _seg_seg_dist(s1, e1, s2, e2) < r1 + r2 + 0.12:
                         victims.add(other)
+                        hit = True
                         break
+                if hit:
+                    break
         for v in victims:
-            rip_net(board, v)
+            rip_net(board, v, snap)
+        pcbnew.SaveBoard(pc.PCB, board)
+    print("RIPUP_RESULT ok=1 victims=" + ",".join(sorted(victims)),
+          flush=True)
+    return 0
+
+
+def ripup_route(netnames):
+    """Parent: one subprocess per net so pcbnew SWIG never decays."""
+    leftovers = list(netnames)
+    leftover_set = set(leftovers)
+    pending = list(netnames)
+    attempts = {}
+    failed = []
+    here = os.path.abspath(__file__)
+    for it in range(110):
+        if not pending:
+            break
+        n = pending.pop(0)
+        attempts[n] = attempts.get(n, 0) + 1
+        if attempts[n] > 6:
+            print(f"[ripup] giving up {n}", flush=True)
+            if n not in failed:
+                failed.append(n)
+            continue
+        protect = []
+        if n not in leftover_set:
+            # ripped existing routes must go around the leftover nets
+            protect = list(leftover_set)
+        print(f"[ripup] it={it+1} try {n} (#{attempts[n]}) "
+              f"protect={protect} queue={pending}", flush=True)
+        cmd = [sys.executable, here, "--ripup-one", n]
+        if protect:
+            cmd.append("--protect")
+            cmd.extend(protect)
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        sys.stdout.write(r.stdout)
+        sys.stdout.flush()
+        if r.returncode not in (0, 1) or "RIPUP_RESULT" not in (r.stdout or ""):
+            print(f"[ripup] worker crash rc={r.returncode}", flush=True)
+            if r.stderr:
+                sys.stderr.write(r.stderr[-2000:])
+            if attempts[n] < 4:
+                pending.append(n)
+            else:
+                failed.append(n)
+            continue
+        line = [ln for ln in r.stdout.splitlines() if ln.startswith("RIPUP_RESULT")][-1]
+        ok = "ok=1" in line
+        victims = []
+        if "victims=" in line:
+            vs = line.split("victims=", 1)[1].strip()
+            if vs:
+                victims = [v for v in vs.split(",") if v]
+        if not ok:
+            print(f"[ripup] {n}: NO PATH even soft", flush=True)
+            if n in leftover_set and attempts[n] < 4:
+                pending.append(n)
+            elif n not in leftover_set and attempts[n] < 6 and protect:
+                # retry without protecting leftovers
+                leftover_set.discard("__dummy__")
+                pending.append(n)
+                # next try: allow ripping leftovers by pretending it's a leftover
+                leftover_set.add(n)
+            else:
+                failed.append(n)
+            continue
+        for v in victims:
             if v not in pending:
                 pending.append(v)
-        pcbnew.SaveBoard(pc.PCB, board)
+            if v in failed:
+                failed.remove(v)
         print(f"[ripup] {n}: OK"
-              + (f", ripped {sorted(victims)}" if victims else ""))
-    if pending:
-        print("[ripup] LEFT UNROUTED:", pending)
+              + (f", ripped {sorted(victims)}" if victims else ""),
+              flush=True)
+    # zone refill in its own process
+    subprocess.run([sys.executable, here, "--fill-zones"], check=False)
+    if pending or failed:
+        left = list(dict.fromkeys(failed + pending))
+        print("[ripup] LEFT UNROUTED:", left, flush=True)
     else:
-        print("[ripup] ALL ROUTED")
+        print("[ripup] ALL ROUTED", flush=True)
+
+
+def fill_zones_cli():
+    board = pcbnew.LoadBoard(pc.PCB)
+    fill_zones(board)
+    pcbnew.SaveBoard(pc.PCB, board)
+    print("zones refilled", flush=True)
 
 
 def route_only(netname, width=None):
@@ -559,18 +843,65 @@ def route_only(netname, width=None):
     if width:
         TRACK_W = width
     board = pcbnew.LoadBoard(pc.PCB)
-    ladder = [(0.25, 0.16), (0.125, 0.16), (0.1, 0.155),
-              (0.075, 0.155), (0.06, 0.152)]
+    ladder = [(0.25, 0.16), (0.125, 0.16), (0.1, 0.162),
+              (0.075, 0.162), (0.06, 0.158)]
     for step, clr in ladder:
         set_step(step, clr)
         grid = build_grid(board, skip_nets={netname})
         ok = route_net(board, grid, netname)
-        print(f"[step={step} clr={clr}] {netname}: {'OK' if ok else 'FAILED'}")
+        print(f"[step={step} clr={clr}] {netname}: {'OK' if ok else 'FAILED'}",
+              flush=True)
         if ok:
+            fill_zones(board)
             pcbnew.SaveBoard(pc.PCB, board)
             return 0
         rip_net(board, netname)
     pcbnew.SaveBoard(pc.PCB, board)
+    return 1
+
+
+def probe_net(netname, soft=False):
+    """BFS reachability report (no board writes)."""
+    global TRACK_W
+    TRACK_W = 0.15
+    board = pcbnew.LoadBoard(pc.PCB)
+    set_step(0.1, 0.155)
+    grid = build_grid(board, skip_nets={netname}, soft_signals=soft)
+    seeds = pad_cells(board, netname)
+    carve_seeds(grid, seeds)
+    from collections import deque
+    starts = seed_nodes(grid, seeds[0][0])
+    goals = set()
+    for s in seeds[1:]:
+        goals |= seed_nodes(grid, s[0])
+    print(f"probe {netname} soft={soft} start={seeds[0][1]} "
+          f"escapes={[s[1] for s in seeds]} starts={len(starts)} "
+          f"goals={len(goals)}", flush=True)
+    q = deque(starts)
+    seen = set(starts)
+    while q:
+        layer, ci, cj = q.popleft()
+        if (layer, ci, cj) in goals:
+            print(f"  HIT at {coord((ci, cj))} layer{layer} "
+                  f"seen={len(seen)}", flush=True)
+            return 0
+        for di, dj, _ in DIRS:
+            ni, nj = ci + di, cj + dj
+            if not (0 <= ni < NX and 0 <= nj < NY):
+                continue
+            if grid.blocked[layer][ni][nj]:
+                continue
+            nn = (layer, ni, nj)
+            if nn in seen:
+                continue
+            seen.add(nn)
+            q.append(nn)
+        if grid.via_ok((ci, cj)):
+            nn = (1 - layer, ci, cj)
+            if nn not in seen:
+                seen.add(nn)
+                q.append(nn)
+    print(f"  MISS seen={len(seen)}", flush=True)
     return 1
 
 
@@ -579,9 +910,24 @@ if __name__ == "__main__":
         rip_only(sys.argv[2])
     elif sys.argv[1] == "--ripup":
         ripup_route(sys.argv[2:])
+    elif sys.argv[1] == "--ripup-one":
+        net = sys.argv[2]
+        prot = []
+        if "--protect" in sys.argv:
+            prot = sys.argv[sys.argv.index("--protect") + 1:]
+        sys.exit(ripup_one(net, prot))
+    elif sys.argv[1] == "--fill-zones":
+        fill_zones_cli()
     elif sys.argv[1] == "--route":
         w = float(sys.argv[3]) if len(sys.argv) > 3 else None
         sys.exit(route_only(sys.argv[2], width=w))
+    elif sys.argv[1] == "--probe":
+        soft = "--soft" in sys.argv
+        nets = [a for a in sys.argv[2:] if a != "--soft"]
+        rc = 0
+        for n in nets:
+            rc |= probe_net(n, soft=soft)
+        sys.exit(rc)
     elif sys.argv[1] == "--dump":
         # --dump NET x0 y0 x1 y1 : write blocked maps as PNG
         from PIL import Image

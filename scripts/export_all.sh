@@ -22,9 +22,9 @@ kicad-cli sch export netlist --format kicadsexpr -o "$OUT/ailink.net" "$SCH"
 
 echo "== BOM =="
 kicad-cli sch export bom \
-  --fields 'Reference,Value,Footprint,${QUANTITY},${DNP}' \
-  --labels 'Refs,Value,Footprint,Qty,DNP' \
-  --group-by Value,Footprint \
+  --fields 'Reference,Value,Footprint,MPN,Spec,${QUANTITY},${DNP}' \
+  --labels 'Refs,Value,Footprint,MPN,Spec,Qty,DNP' \
+  --group-by Value,Footprint,MPN,Spec \
   -o "$OUT/ailink-bom.csv" "$SCH"
 
 echo "== PCB layer PDFs =="

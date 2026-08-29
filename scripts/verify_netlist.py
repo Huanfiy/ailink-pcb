@@ -91,10 +91,10 @@ def main():
            "J1-A4", "J1-A9", "J1-B4", "J1-B9", "F1-1", "TP1-1")
     expect(nets, pad2net, "VBUS_P",
            "F1-2", "U3-1", "U3-3", "D1-5", "C1-1")
-    # TVS cathode on VBUS_P, anode on GND (pin naming K/A varies)
-    d7 = {pad2net.get(("D7", "1")), pad2net.get(("D7", "2"))}
-    if d7 != {"VBUS_P", "GND"}:
-        FAIL.append(f"D7 TVS nets wrong: {d7}")
+    # TVS polarity is DIRECTIONAL: D_SMA pad1 = cathode band -> VBUS_P,
+    # pad2 = anode -> GND. A reversed part would forward-short VBUS.
+    expect(nets, pad2net, "VBUS_P", "D7-1")
+    expect(nets, pad2net, "GND", "D7-2")
     expect(nets, pad2net, "CC1", "J1-A5", "R1-1")
     expect(nets, pad2net, "CC2", "J1-B5", "R2-1")
     expect(nets, pad2net, "SHIELD", "J1-SH", "R3-1", "C13-1")
@@ -150,12 +150,12 @@ def main():
         ("B_RX", "R16", "B_RX_J", "J3-4", "D3-6"),
         ("TGPIO0", "R17", "TGPIO0_J", "J4-1", "D4-1"),
         ("TGPIO1", "R18", "TGPIO1_J", "J4-3", "D4-3"),
-        ("TGPIO2", "R19", "TGPIO2_J", "J4-5", "D4-4"),
-        ("TGPIO3", "R20", "TGPIO3_J", "J4-7", "D4-6"),
-        ("TGPIO4", "R21", "TGPIO4_J", "J4-2", "D5-1"),
-        ("TGPIO5", "R22", "TGPIO5_J", "J4-4", "D5-3"),
-        ("TGPIO6", "R23", "TGPIO6_J", "J4-6", "D5-4"),
-        ("TGPIO7", "R24", "TGPIO7_J", "J4-8", "D5-6"),
+        ("TGPIO2", "R19", "TGPIO2_J", "J4-5", "D5-1"),
+        ("TGPIO3", "R20", "TGPIO3_J", "J4-7", "D5-3"),
+        ("TGPIO4", "R21", "TGPIO4_J", "J4-2", "D4-6"),
+        ("TGPIO5", "R22", "TGPIO5_J", "J4-4", "D4-4"),
+        ("TGPIO6", "R23", "TGPIO6_J", "J4-6", "D5-6"),
+        ("TGPIO7", "R24", "TGPIO7_J", "J4-8", "D5-4"),
         ("CON_TX", "R25", "CON_TX_J", "J5-1", "D6-1"),
         ("CON_RX", "R26", "CON_RX_J", "J5-2", "D6-3"),
     ]

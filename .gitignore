@@ -22,12 +22,11 @@ _autosave-*
 # 网表 / 自动布线中间文件
 *.dsn
 *.ses
-*.net
 
-# 导出的 BOM / 制造与预览产物
+# 交付物入库（outputs/ 为正式交付的一部分）
 *.xml
-*.csv
-outputs/
+!outputs/**
+!hardware/ailink.net
 
 # 第三方二进制（自行下载到 tools/）
 tools/*.jar
@@ -37,3 +36,4 @@ tools/*.jar
 Thumbs.db
 *~
 *.swp
+.cursor/

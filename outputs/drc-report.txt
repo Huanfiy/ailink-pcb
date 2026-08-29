@@ -1,0 +1,26 @@
+** Drc report for ailink.kicad_pcb **
+** Created on 2026-08-30T04:29:19 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 2 DRC violations **
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: <电路板配置> 中的 "丝印" 约束; warning
+    @(100.0000 mm, 133.0000 mm): Edge.Cuts 上的 线段
+    @(101.6000 mm, 112.8000 mm): J1 的 线段, 位于 F.Silkscreen
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: <电路板配置> 中的 "丝印" 约束; warning
+    @(100.0000 mm, 133.0000 mm): Edge.Cuts 上的 线段
+    @(101.6000 mm, 122.2000 mm): J1 的 线段, 位于 F.Silkscreen
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

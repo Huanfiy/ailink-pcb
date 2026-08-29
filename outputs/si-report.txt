@@ -1,0 +1,17 @@
+USB differential pair — main-path length (U1 → J1 A6/A7)
+board: /home/huan/workspace/kicad/ailink/hardware/ailink.kicad_pcb
+mtime: 2026-08-30 04:22:39  sha256[:16]=6a1c427915509a33
+method: endpoint graph tol=0.01 mm; via equivalent=0.5 mm; T-junctions split; stubs TP6/TP7 and J1 B6/B7 excluded
+
+USB_DP main path U1.45 -> J1.A6: 52.11 mm (0 vias)
+USB_DM main path U1.44 -> J1.A7: 52.14 mm (2 vias)
+intra-pair mismatch: 0.03 mm (requirement <= 2 mm)
+conclusion: PASS (within 2 mm)
+
+stubs (excluded from main path):
+  USB_DP J1.B6: 1.95 mm (no via)
+  USB_DP TP6.1: 4.31 mm (no via)
+  USB_DM J1.B7: 1.51 mm (no via)
+  USB_DM TP7.1: 1.64 mm (no via)
+
+coupled section: 0.35 mm width / 0.15 mm gap on F.Cu over the In1 GND plane (target 90 ohm differential, JLC7628 stackup; tune width to fab coupon)
