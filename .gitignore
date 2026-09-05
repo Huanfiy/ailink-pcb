@@ -36,5 +36,11 @@ tools/*.jar
 Thumbs.db
 *~
 *.swp
-.cursor/
 refer/
+
+# AI 工具目录（个人环境，不入库）
+.claude/
+.cursor/
+.codex/
+.agents/
+.gemini/
