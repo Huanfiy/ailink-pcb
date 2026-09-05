@@ -19,12 +19,12 @@ from pcb_common import mm, pt
 import pcbnew
 
 STEP = 0.25
-X0, Y0, X1, Y1 = 100.0, 100.0, 165.0, 135.0
+from product_config import X0, Y0, X1, Y1, MCU_CENTER
 NX = int((X1 - X0) / STEP) + 1
 NY = int((Y1 - Y0) / STEP) + 1
 TRACK_W = 0.2
 CLR = 0.16
-VIA_D, VIA_DRILL = 0.6, 0.3
+VIA_D, VIA_DRILL = 0.5, 0.3
 
 
 def set_step(step, clr):
@@ -38,6 +38,11 @@ F, B = 0, 1
 LAYER_ID = {F: pcbnew.F_Cu, B: pcbnew.B_Cu}
 
 
+def enable_inner_signals():
+    """Allow short L3 escapes; L2 and the rear USB reference stay continuous."""
+    LAYER_ID[2] = pcbnew.In2_Cu
+
+
 def cell(x, y):
     return (int(round((x - X0) / STEP)), int(round((y - Y0) / STEP)))
 
@@ -48,10 +53,21 @@ def coord(c):
 
 class Grid:
     def __init__(self):
-        self.blocked = [[bytearray(NY) for _ in range(NX)],
-                        [bytearray(NY) for _ in range(NX)]]
+        self.blocked = [[bytearray(NY) for _ in range(NX)] for _ in LAYER_ID]
         self.via_bad = [bytearray(NY) for _ in range(NX)]
         self.soft = {}          # (layer, i, j) -> netname (rippable copper)
+
+    def track_allowed(self, layer, i, j):
+        if self.blocked[layer][i][j]:return False
+        if layer == F:
+            x,y=coord((i,j))
+            if 125.925 < x < 129.275 and 109.575 < y < 112.425:return False
+        if layer == 2:
+            x,y=coord((i,j))
+            # Protect actual L3 GND plus 0.25 mm. Through vias may cross the
+            # plane with antipads; F/B switching is distinct from routing L3.
+            if 105.25 < x < 113.85 and 106.35 < y < 115.55:return False
+        return True
 
     def soft_disc(self, layer, x, y, r, netname):
         c0 = cell(x - r, y - r)
@@ -106,6 +122,21 @@ class Grid:
                 if dx * dx + dy * dy <= r * r:
                     self.blocked[layer][i][j] = 1
 
+    def block_shape(self, layer, shape, margin):
+        """Rasterize actual KiCad pad copper, not its rectangular envelope.
+
+        Bounding boxes close valid channels beside circular/oval/rounded pads.
+        The native shape test keeps those channels while retaining clearance.
+        """
+        bbox = pcbnew.SHAPE.BBox(shape)
+        lo = cell(pc.to_mm(bbox.GetLeft()) - margin, pc.to_mm(bbox.GetTop()) - margin)
+        hi = cell(pc.to_mm(bbox.GetRight()) + margin, pc.to_mm(bbox.GetBottom()) + margin)
+        clearance = mm(margin)
+        for i in range(max(0, lo[0]), min(NX, hi[0] + 1)):
+            for j in range(max(0, lo[1]), min(NY, hi[1] + 1)):
+                if pcbnew.SHAPE.Collide(shape, pt(*coord((i, j))), clearance):
+                    self.blocked[layer][i][j] = 1
+
     def is_free(self, layer, c):
         return not self.blocked[layer][c[0]][c[1]]
 
@@ -120,8 +151,8 @@ class Grid:
         if self.via_bad[c[0]][c[1]]:
             return False
         extra = max(1, int(math.ceil((VIA_D - TRACK_W) / 2.0 / STEP)))
-        r2 = extra * extra + 1
-        for layer in (F, B):
+        r2 = ((VIA_D - TRACK_W) / 2.0 / STEP) ** 2
+        for layer in LAYER_ID:
             for di in range(-extra, extra + 1):
                 for dj in range(-extra, extra + 1):
                     if di * di + dj * dj > r2:
@@ -136,7 +167,7 @@ class Grid:
 
 HARD_NETS = ("GND", "+3V3", "USB_DP", "USB_DM",
              "OSC_IN", "OSC_XO", "OSC_OUT", "NRST", "MCU_SWDIO")
-MCU_CX, MCU_CY = 128.5, 118.0
+MCU_CX, MCU_CY = MCU_CENTER
 
 
 def via_dia(t):
@@ -154,36 +185,34 @@ def build_grid(board, skip_nets, soft_signals=False):
     """soft_signals: other signal nets' tracks become rip-able soft cost."""
     g = Grid()
     # coarse grids need the half-cell fudge; fine grids can run exact
-    fudge = STEP * 0.51 if STEP > 0.08 else 0.02
+    fudge = STEP * 0.51 if STEP > 0.08 else 0.0
     margin = TRACK_W / 2 + CLR + fudge
     # board edge
     for i in range(NX):
         for j in range(NY):
             px, py = coord((i, j))
             if px < X0 + 0.55 or px > X1 - 0.55 or py < Y0 + 0.55 or py > Y1 - 0.55:
-                g.blocked[F][i][j] = 1
-                g.blocked[B][i][j] = 1
+                for layer in LAYER_ID:
+                    g.blocked[layer][i][j] = 1
     for t in all_tracks(board):
         net = t.GetNetname()
         if net in skip_nets:
             continue
         rippable = (soft_signals and net not in HARD_NETS
-                    and not net.startswith("unconnected"))
+                    and not t.IsLocked() and not net.startswith("unconnected"))
         if t.GetClass() == "PCB_VIA":
             x, y = pc.to_mm(t.GetPosition().x), pc.to_mm(t.GetPosition().y)
             r = via_dia(t) / 2 + margin
             if rippable:
-                g.soft_disc(F, x, y, r, net)
-                g.soft_disc(B, x, y, r, net)
+                for layer in LAYER_ID:g.soft_disc(layer, x, y, r, net)
             else:
-                g.block_disc(F, x, y, r)
-                g.block_disc(B, x, y, r)
+                for layer in LAYER_ID:g.block_disc(layer, x, y, r)
                 g.block_via_disc(x, y, 0.62)
         else:
             lay = t.GetLayerName()
-            if lay not in ("F.Cu", "B.Cu"):
+            if t.GetLayer() not in LAYER_ID.values():
                 continue
-            layer = F if lay == "F.Cu" else B
+            layer = next(i for i,layer_id in LAYER_ID.items() if t.GetLayer()==layer_id)
             r = pc.to_mm(t.GetWidth()) / 2 + margin
             x1, y1 = pc.to_mm(t.GetStart().x), pc.to_mm(t.GetStart().y)
             x2, y2 = pc.to_mm(t.GetEnd().x), pc.to_mm(t.GetEnd().y)
@@ -212,14 +241,21 @@ def build_grid(board, skip_nets, soft_signals=False):
                 elif pad.GetLayerSet().Contains(pcbnew.F_Cu):
                     layers = [F]
                 # keep via holes away from all SMD pads (hole clearance)
-                g.block_via_disc(x, y, max(hw, hh) + 0.42)
+                c0=cell(x-hw-VIA_DRILL/2-.075,y-hh-VIA_DRILL/2-.075)
+                c1=cell(x+hw+VIA_DRILL/2+.075,y+hh+VIA_DRILL/2+.075)
+                for i in range(max(0,c0[0]),min(NX,c1[0]+1)):
+                    for j in range(max(0,c0[1]),min(NY,c1[1]+1)):
+                        px,py=coord((i,j))
+                        dx=max(abs(px-x)-hw,0);dy=max(abs(py-y)-hh,0)
+                        if dx*dx+dy*dy<(VIA_DRILL/2+.075)**2:g.via_bad[i][j]=1
             else:
-                layers = [F, B]
+                layers = list(LAYER_ID)
                 g.block_via_disc(x, y, 0.9)
             if net in skip_nets:
                 continue
             for layer in layers:
-                g.block_rect(layer, x, y, hw, hh, margin)
+                pad_margin=max(margin,TRACK_W/2+.255+fudge) if pad.GetAttribute()==pcbnew.PAD_ATTRIB_NPTH else margin
+                g.block_shape(layer, pad.GetEffectiveShape(LAYER_ID[layer]), pad_margin)
     # Rule areas (keepouts): A* otherwise ignores them and re-enters.
     for z in board.Zones():
         if not z.GetIsRuleArea():
@@ -299,7 +335,7 @@ def astar(g, starts, goals):
             ni, nj = ci + di, cj + dj
             if not (0 <= ni < NX and 0 <= nj < NY):
                 continue
-            if g.blocked[layer][ni][nj]:
+            if not g.track_allowed(layer,ni,nj):
                 continue
             nn = (layer, ni, nj)
             ng = base + w + (soft_cost if (layer, ni, nj) in soft else 0)
@@ -308,11 +344,14 @@ def astar(g, starts, goals):
                 heapq.heappush(openq, (ng + h(nn), nn, node))
         # via
         if g.via_ok((ci, cj)):
-            nn = (1 - layer, ci, cj)
-            ng = base + 12
-            if nn not in gx or ng < gx[nn] - 1e-9:
-                gx[nn] = ng
-                heapq.heappush(openq, (ng + h(nn), nn, node))
+            for other_layer in LAYER_ID:
+                if other_layer == layer:continue
+                if not g.track_allowed(other_layer,ci,cj):continue
+                nn = (other_layer, ci, cj)
+                ng = base + 12
+                if nn not in gx or ng < gx[nn] - 1e-9:
+                    gx[nn] = ng
+                    heapq.heappush(openq, (ng + h(nn), nn, node))
     return None
 
 
@@ -344,7 +383,10 @@ def path_to_geometry(path):
             ax, ay = keep[-1]
             bx, by = ps[i]
             cx2, cy2 = ps[i + 1]
-            if (bx - ax) * (cy2 - by) - (by - ay) * (cx2 - bx) != 0:
+            # Coordinates are decimal millimetres: exact float comparison
+            # leaves dozens of artificial bends on a straight grid run.
+            cross = (bx - ax) * (cy2 - by) - (by - ay) * (cx2 - bx)
+            if abs(cross) > 1e-9:
                 keep.append(ps[i])
         keep.append(ps[-1])
         slim.append((layer, keep))
@@ -412,7 +454,7 @@ def pad_cells(board, netname):
             ex, ey = pad_escape(x, y, hw, hh)
             c = cell(ex, ey)
             if pad.GetAttribute() == pcbnew.PAD_ATTRIB_SMD:
-                layer = F if fp.GetLayer() == pcbnew.F_Cu else B
+                layer = B if pad.IsOnLayer(pcbnew.B_Cu) and not pad.IsOnLayer(pcbnew.F_Cu) else F
                 layers = [layer]
             else:
                 layers = [F, B]

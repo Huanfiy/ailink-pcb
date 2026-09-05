@@ -1,0 +1,227 @@
+(footprint "Product_LED_RGB_1210"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "RGB LED 3.2x2.7mm http://www.avagotech.com/docs/AV02-0610EN; ailink product: assembly outlines on Fab")
+	(tags "LED 3227")
+	(property "Reference" "REF**"
+		(at 0 -2.3 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4064709c-bd13-40bb-903a-5a463cfd87ea")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "LED_RGB_1210"
+		(at 0 2.45 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "44814cbe-291a-4347-a225-ef7219b2636d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7eb14c34-7ca3-418e-9035-7f43b41901e2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "76cec2d6-314a-474d-aa0b-56de179e8930")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -2.95 -1.65)
+		(end -2.95 1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "4729c62b-3cdc-4ffc-8f99-8ea290b1f643")
+	)
+	(fp_line
+		(start -2.95 1.65)
+		(end 2.85 1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "223185de-22c0-45bb-b52f-80f32fb393e0")
+	)
+	(fp_line
+		(start 2.85 -1.65)
+		(end -2.95 -1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "2d7399ab-91ed-4736-a9f1-0b3fa420ee1c")
+	)
+	(fp_line
+		(start 2.85 1.65)
+		(end 2.85 -1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "6453763c-a434-4640-bab2-8f007b74bb58")
+	)
+	(fp_line
+		(start -2.8 -0.5)
+		(end -2.8 -1.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f817714e-e287-4bca-94fe-cac0fae1e93e")
+	)
+	(fp_line
+		(start -1.6 -0.675)
+		(end -0.925 -1.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "0f278bad-d2ef-48f2-a3e9-66e5cc772917")
+	)
+	(fp_line
+		(start -1.6 1.35)
+		(end -1.6 -0.675)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "ac47572c-9ab7-453b-8239-45d0262bda40")
+	)
+	(fp_line
+		(start -0.925 -1.35)
+		(end 1.6 -1.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "f9081b05-5488-4ae8-a7b0-cecf3534a92d")
+	)
+	(fp_line
+		(start 1.6 -1.35)
+		(end 1.6 1.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "37476f89-98df-4e4a-aa23-d25fbfc2f44a")
+	)
+	(fp_line
+		(start 1.6 1.35)
+		(end -1.6 1.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4ef1b932-be6f-433c-b861-056d0bc04507")
+	)
+	(fp_line
+		(start 2.7 -1.5)
+		(end -2.8 -1.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "fc9162da-2235-4c86-b776-9f21ac19f88e")
+	)
+	(fp_line
+		(start 2.7 1.5)
+		(end -2.7 1.5)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "3a1fac8c-2c8e-433c-aff9-e90f6740cd01")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -2.3 0)
+		(layer "F.Fab")
+		(uuid "b3e431d8-384d-409c-b468-cb8299c7db64")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -1.75 -0.7 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "d9968bfe-bb93-47ff-87f7-a618cbea52c2")
+	)
+	(pad "2" smd rect
+		(at -1.75 0.7 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "26efb757-d051-487f-8c42-abdf855a02c2")
+	)
+	(pad "3" smd rect
+		(at 1.75 0.7 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "e005a86b-4909-46bb-b45a-3beffe905136")
+	)
+	(pad "4" smd rect
+		(at 1.75 -0.7 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "acd75d01-119b-4298-98d6-23c911f0c448")
+	)
+	(embedded_fonts no)
+	(model "${KICAD10_3DMODEL_DIR}/LED_SMD.3dshapes/LED_RGB_1210.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

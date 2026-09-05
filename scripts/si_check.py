@@ -3,8 +3,9 @@
 
 Reads USB_DP / USB_DM copper, builds an endpoint graph (0.01 mm snap,
 including T-junctions), then reports the U1→J1 A6/A7 main path.
-Vias add 0.5 mm equivalent length. TP6/TP7 and J1 B6/B7 stubs are
-excluded from the main path and listed separately.
+Via barrels use the physical board thickness. Both Type-C orientations
+are checked. TP6/TP7 branches are reported separately. This is geometry
+verification, not impedance or signal-integrity simulation.
 
 Default board: pcb_common.PCB. Pass a path (e.g. /tmp/si_dev.kicad_pcb)
 to analyze a copy. pcbnew import may emit PROPERTY_ENUM asserts on
@@ -25,7 +26,7 @@ import pcb_common as pc
 import pcbnew
 
 TOL_MM = 0.01
-VIA_EQ_MM = 0.5
+VIA_EQ_MM = 1.6
 MATCH_REQ_MM = 2.0
 
 # Main path endpoints and stubs excluded from the main length.
@@ -176,6 +177,7 @@ def _dijkstra(graph, via_nodes, start, goals):
         return None
     # (cost, seq, node, last_layer, n_vias)
     pq = [(0.0, 0, start, None, 0)]
+    queued = {(start, None): 0.0}
     best = {}
     prev = {}
     seq = 0
@@ -197,14 +199,17 @@ def _dijkstra(graph, via_nodes, start, goals):
             extra = 0.0
             nv = n_vias
             if last_layer is not None and layer != last_layer:
+                if node not in via_nodes:
+                    continue
                 extra = VIA_EQ_MM
                 nv += 1
             elif last_layer is not None and layer == last_layer:
                 extra = 0.0
             ncost = cost + length + extra
             nkey = (nbr, layer)
-            if nkey in best and best[nkey] <= ncost + 1e-12:
+            if ncost >= queued.get(nkey, float('inf')) - 1e-12:
                 continue
+            queued[nkey] = ncost
             seq += 1
             prev[nkey] = (node, last_layer)
             heapq.heappush(pq, (ncost, seq, nbr, layer, nv))
@@ -249,7 +254,9 @@ def _analyze_net(board, netname, snap_seed=None):
         stub_xys.append(xy)
         stub_meta.append((f"{ref}.{pin}", xy))
 
-    extra = [p for p in [u_xy, j_xy, *stub_xys, *vias] if p is not None]
+    esd_pins = ('4','3') if netname == 'USB_DP' else ('6','1')
+    esd_xys = [_pad_xy(board, 'D1', pin) for pin in esd_pins]
+    extra = [p for p in [u_xy, j_xy, *stub_xys, *vias, *esd_xys] if p is not None]
     for a, b, _layer, _ln in segs:
         extra.append(a)
         extra.append(b)
@@ -294,6 +301,7 @@ def _analyze_net(board, netname, snap_seed=None):
         "vias_on_net": len(vias),
         "u_pad": f"{u_ref}.{u_pin}",
         "j_pad": f"{j_ref}.{j_pin}",
+        "protected": all(_nearest_node(snap,p) in main_nodes for p in esd_xys),
     }
 
 
@@ -307,17 +315,20 @@ def _file_meta(path):
 
 
 def report(board_path):
+    global VIA_EQ_MM
     mtime, digest = _file_meta(board_path)
     board = pcbnew.LoadBoard(board_path)
+    VIA_EQ_MM = pcbnew.ToMM(board.GetDesignSettings().GetBoardThickness())
     lines = []
-    lines.append("USB differential pair — main-path length (U1 → J1 A6/A7)")
+    lines.append("USB differential pair — both Type-C orientations")
     lines.append(f"board: {os.path.abspath(board_path)}")
     lines.append(f"mtime: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(mtime))}  sha256[:16]={digest}")
-    lines.append(f"method: endpoint graph tol={TOL_MM} mm; via equivalent={VIA_EQ_MM} mm; "
+    lines.append(f"method: endpoint graph tol={TOL_MM} mm; physical via barrel={VIA_EQ_MM} mm; "
                  "T-junctions split; stubs TP6/TP7 and J1 B6/B7 excluded")
     lines.append("")
 
     results = {}
+    passed = True
     for net in ("USB_DP", "USB_DM"):
         results[net] = _analyze_net(board, net)
 
@@ -330,18 +341,43 @@ def report(board_path):
             f"{net} main path {r['u_pad']} -> {r['j_pad']}: "
             f"{r['length']:.2f} mm ({r['n_vias']} vias)"
         )
+        lines.append(f"  D1 flow-through pads on path: {r['protected']}")
+        passed &= r['protected'] and r['n_vias'] == 2
 
     if all(results[n]["ok"] for n in ("USB_DP", "USB_DM")):
         dp = results["USB_DP"]["length"]
         dm = results["USB_DM"]["length"]
         skew = abs(dp - dm)
         ok = skew <= MATCH_REQ_MM
+        passed &= ok
         lines.append(f"intra-pair mismatch: {skew:.2f} mm "
                      f"(requirement <= {MATCH_REQ_MM:.0f} mm)")
         lines.append(f"conclusion: {'PASS' if ok else 'FAIL'} "
                      f"({'within' if ok else 'exceeds'} {MATCH_REQ_MM:.0f} mm)")
     else:
+        passed = False
         lines.append("conclusion: FAIL (path missing)")
+
+    # Reversing a Type-C plug uses the B6/B7 contacts. Their fanout can have
+    # different lengths even when the A6/A7 pair is matched.
+    reverse = {}
+    for net, pin in (("USB_DP", "B6"), ("USB_DM", "B7")):
+        original = MAIN_PADS[net]
+        MAIN_PADS[net] = (original[0], ("J1", pin))
+        reverse[net] = _analyze_net(board, net)
+        MAIN_PADS[net] = original
+        r = reverse[net]
+        if r['ok']:
+            lines.append(f"{net} reverse path {r['u_pad']} -> {r['j_pad']}: "
+                         f"{r['length']:.2f} mm ({r['n_vias']} vias), D1 on path: {r['protected']}")
+            passed &= r['protected'] and r['n_vias'] == 2
+        else:
+            passed = False
+            lines.append(f"FAIL: {r['error']}")
+    if all(r['ok'] for r in reverse.values()):
+        skew = abs(reverse['USB_DP']['length']-reverse['USB_DM']['length'])
+        passed &= skew <= MATCH_REQ_MM
+        lines.append(f"reverse mismatch: {skew:.2f} mm (requirement <= {MATCH_REQ_MM} mm)")
 
     lines.append("")
     lines.append("stubs (excluded from main path):")
@@ -353,6 +389,7 @@ def report(board_path):
         for name, slen, note in r["stubs"]:
             any_stub = True
             if slen is None:
+                passed = False
                 lines.append(f"  {net} {name}: {note}")
             else:
                 lines.append(f"  {net} {name}: {slen:.2f} mm ({note})")
@@ -360,16 +397,19 @@ def report(board_path):
         lines.append("  (none)")
 
     lines.append("")
-    lines.append("coupled section: 0.35 mm width / 0.15 mm gap on F.Cu "
-                 "over the In1 GND plane (target 90 ohm differential, "
-                 "JLC7628 stackup; tune width to fab coupon)")
-    return "\n".join(lines) + "\n", results
+    lines.append("F.Cu references In1 GND; rear USB references the In2 GND window.")
+    lines.append("Nominal traces 0.35 mm; local escapes 0.25 mm; connector/ESD fanout has uncoupled sections.")
+    lines.append("90 ohm target requires the actual stackup, field-solver review and prototype measurements; "
+                 "length matching alone does not verify impedance.")
+    lines.append(f"GEOMETRY RESULT: {'PASS' if passed else 'FAIL'}")
+    return "\n".join(lines) + "\n", passed
 
 
 def main():
     board_path = sys.argv[1] if len(sys.argv) > 1 else pc.PCB
-    text, _results = report(board_path)
+    text, passed = report(board_path)
     sys.stdout.write(text)
+    sys.exit(0 if passed else 1)
 
 
 if __name__ == "__main__":

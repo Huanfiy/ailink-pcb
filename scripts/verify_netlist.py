@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Golden connectivity check: asserts the generated schematic netlist matches
-product.md v0.3 (§5.1 pin table + §4 protection topology) exactly."""
+product.md v0.4 (§5.1 pin table + §4 protection topology) exactly."""
 import os
 import subprocess
 import sys
@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import sexp
 
-HW = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware")
+HW = os.environ.get('AILINK_HW', os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware"))
 SCH = os.path.join(HW, "ailink.kicad_sch")
 NET = "/tmp/ailink_verify.net"
 
@@ -71,6 +71,8 @@ def main():
         "37": "A_TX", "38": "A_RX",
         "5": "OSC_IN", "6": "OSC_OUT",
         "60": "BOOT0", "7": "NRST",
+        "11": "LED_A_TX", "24": "LED_A_RX", "25": "LED_B_TX",
+        "39": "LED_B_RX", "40": "PWR_OUT_EN",
     }
     for pad, net in pinmap.items():
         expect(nets, pad2net, net, f"U1-{pad}")
@@ -101,8 +103,8 @@ def main():
     expect(nets, pad2net, "GND",
            "J1-A1", "J1-A12", "J1-B1", "J1-B12",
            "R1-2", "R2-2", "R3-2", "C13-2", "D1-2")
-    expect(nets, pad2net, "+3V3", "U3-5", "C2-1", "TP2-1")
-    expect(nets, pad2net, "GND", "U3-2", "C1-2", "C2-2", "TP3-1")
+    expect(nets, pad2net, "+3V3", "U3-5", "C2-1")
+    expect(nets, pad2net, "GND", "U3-2", "C1-2", "C2-2")
 
     # ---- crystal ----
     expect(nets, pad2net, "OSC_IN", "U1-5", "X1-3", "C10-1")
@@ -111,11 +113,11 @@ def main():
     expect(nets, pad2net, "GND", "X1-2", "X1-4", "C10-2", "C11-2")
 
     # ---- boot / reset ----
-    expect(nets, pad2net, "BOOT0", "U1-60", "R4-1", "SW1-1", "TP5-1")
+    expect(nets, pad2net, "BOOT0", "U1-60", "R4-1", "J6-6")
     expect(nets, pad2net, "BOOT1", "U1-28", "R5-1")
-    expect(nets, pad2net, "NRST", "U1-7", "C12-1", "SW2-1", "TP4-1")
-    expect(nets, pad2net, "GND", "R4-2", "R5-2", "C12-2", "SW2-2")
-    expect(nets, pad2net, "+3V3", "SW1-2")
+    expect(nets, pad2net, "NRST", "U1-7", "C12-1", "R31-2", "J6-5")
+    expect(nets, pad2net, "GND", "R4-2", "R5-2", "C12-2")
+    expect(nets, pad2net, "+3V3", "R31-1")
 
     # ---- SPI NOR ----
     expect(nets, pad2net, "FLASH_CS", "U1-33", "U2-1", "R7-2")
@@ -138,51 +140,71 @@ def main():
     expect(nets, pad2net, "PWRLED", "R30-2", "D9-2")
     expect(nets, pad2net, "GND", "D9-1")
 
+    # ---- independent activity LEDs, never loaded directly from UART ----
+    for i, name in enumerate(("A_TX", "A_RX", "B_TX", "B_RX")):
+        expect(nets, pad2net, "+3V3", f"R{32+i}-1")
+        expect(nets, pad2net, f"ACT_{name}_A", f"R{32+i}-2", f"D{10+i}-2")
+        expect(nets, pad2net, f"LED_{name}", f"D{10+i}-1")
+        assert f"LED_{name}" != name
+    # ---- isolated output branches ----
+    expect(nets, pad2net, "PWR_OUT_EN", "U1-40", "U4-3", "U5-3", "R38-1")
+    expect(nets, pad2net, "GND", "R38-2", "U4-2", "U5-2", "R36-2", "R37-2")
+    for ref, supply, out, jpin, rref, cap in (
+            ("U4", "+3V3", "+3V3_OUT", 10, "R36", 15),
+            ("U5", "VBUS_P", "+5V_OUT", 12, "R37", 17)):
+        expect(nets, pad2net, supply, f"{ref}-1", f"C{cap}-1")
+        expect(nets, pad2net, out, f"{ref}-6", f"J2-{jpin}", f"C{cap+1}-1")
+        expect(nets, pad2net, f"{ref}_ILIM", f"{ref}-5", f"{rref}-1")
+        expect(nets, pad2net, "GND", f"C{cap}-2", f"C{cap+1}-2")
+        expect_nc(pad2net, f"{ref}-4")
+    for ref, pin in pad2net:
+        if ref in ("SW1", "SW2", "H1", "H2", "H3", "H4", "TP2", "TP3", "TP4", "TP5"):
+            FAIL.append(f"obsolete component {ref} remains")
+
     # ---- target interfaces: MCU -> 220R -> ESD+connector ----
     series = [
         # (mcu_net, r_ref, j_net, connector_pad, esd_pad)
-        ("T_SWCLK", "R10", "T_SWCLK_J", "J2-2", "D2-1"),
-        ("T_SWDIO", "R11", "T_SWDIO_J", "J2-3", "D2-3"),
-        ("T_nRESET", "R12", "T_nRESET_J", "J2-4", "D2-4"),
-        ("A_TX", "R13", "A_TX_J", "J3-1", "D3-1"),
-        ("A_RX", "R14", "A_RX_J", "J3-3", "D3-3"),
-        ("B_TX", "R15", "B_TX_J", "J3-2", "D3-4"),
-        ("B_RX", "R16", "B_RX_J", "J3-4", "D3-6"),
-        ("TGPIO0", "R17", "TGPIO0_J", "J4-1", "D4-1"),
-        ("TGPIO1", "R18", "TGPIO1_J", "J4-3", "D4-3"),
-        ("TGPIO2", "R19", "TGPIO2_J", "J4-5", "D5-1"),
-        ("TGPIO3", "R20", "TGPIO3_J", "J4-7", "D5-3"),
-        ("TGPIO4", "R21", "TGPIO4_J", "J4-2", "D4-6"),
-        ("TGPIO5", "R22", "TGPIO5_J", "J4-4", "D4-4"),
-        ("TGPIO6", "R23", "TGPIO6_J", "J4-6", "D5-6"),
-        ("TGPIO7", "R24", "TGPIO7_J", "J4-8", "D5-4"),
+        ("T_SWCLK", "R10", "T_SWCLK_J", "J2-4", "D2-1"),
+        ("T_SWDIO", "R11", "T_SWDIO_J", "J2-6", "D2-3"),
+        ("T_nRESET", "R12", "T_nRESET_J", "J2-8", "D2-4"),
+        ("A_TX", "R13", "A_TX_J", "J2-1", "D3-1"),
+        ("A_RX", "R14", "A_RX_J", "J2-3", "D3-3"),
+        ("B_TX", "R15", "B_TX_J", "J2-7", "D3-4"),
+        ("B_RX", "R16", "B_RX_J", "J2-9", "D3-6"),
+        ("TGPIO0", "R17", "TGPIO0_J", "J3-1", "D4-1"),
+        ("TGPIO1", "R18", "TGPIO1_J", "J3-2", "D4-3"),
+        ("TGPIO2", "R19", "TGPIO2_J", "J3-3", "D4-4"),
+        ("TGPIO3", "R20", "TGPIO3_J", "J3-4", "D4-6"),
+        ("TGPIO4", "R21", "TGPIO4_J", "J4-1", "D5-1"),
+        ("TGPIO5", "R22", "TGPIO5_J", "J4-2", "D5-3"),
+        ("TGPIO6", "R23", "TGPIO6_J", "J4-3", "D5-4"),
+        ("TGPIO7", "R24", "TGPIO7_J", "J4-4", "D5-6"),
         ("CON_TX", "R25", "CON_TX_J", "J5-1", "D6-1"),
         ("CON_RX", "R26", "CON_RX_J", "J5-2", "D6-3"),
     ]
     for mcu_net, r, j_net, j_pad, esd_pad in series:
         expect(nets, pad2net, mcu_net, f"{r}-1")
         expect(nets, pad2net, j_net, f"{r}-2", j_pad, esd_pad)
-    expect(nets, pad2net, "GND", "J2-1", "J3-5", "J3-6", "J4-9", "J4-10",
+    expect(nets, pad2net, "GND", "J2-2", "J2-5", "J2-11",
            "J5-3", "D2-2", "D3-2", "D4-2", "D5-2", "D6-2")
     expect(nets, pad2net, "+3V3", "D2-5", "D3-5", "D4-5", "D5-5", "D6-5")
 
     # ---- J6 self-SWD ----
     expect(nets, pad2net, "+3V3", "J6-1")
-    expect(nets, pad2net, "MCU_SWDIO", "J6-2", "U1-46")
-    expect(nets, pad2net, "MCU_SWCLK", "J6-3", "U1-49")
-    expect(nets, pad2net, "GND", "J6-4")
+    expect(nets, pad2net, "MCU_SWDIO", "J6-3", "U1-46")
+    expect(nets, pad2net, "MCU_SWCLK", "J6-4", "U1-49")
+    expect(nets, pad2net, "GND", "J6-2")
 
     # ---- NC pins (ER-10) ----
     expect_nc(pad2net,
-              "U1-2", "U1-3", "U1-4", "U1-11", "U1-23", "U1-24", "U1-25",
-              "U1-39", "U1-40", "U1-50", "U1-51", "U1-52", "U1-53", "U1-54",
+              "U1-2", "U1-3", "U1-4", "U1-23", "U1-50", "U1-51", "U1-52", "U1-53", "U1-54",
               "U1-55", "U1-56", "U1-57", "U1-58", "U1-59",
               "J1-A8", "J1-B8", "U3-4", "D2-6", "D6-4", "D6-6")
 
     # ---- no unexpected net merges: all these must be distinct ----
     names = ["+3V3", "GND", "VBUS", "VBUS_P", "VDDA", "VCAP",
              "USB_DP", "USB_DM", "OSC_IN", "OSC_XO", "OSC_OUT",
-             "BOOT0", "BOOT1", "NRST"]
+             "BOOT0", "BOOT1", "NRST", "+3V3_OUT", "+5V_OUT", "PWR_OUT_EN"]
     for n in names:
         if n not in nets:
             FAIL.append(f"net '{n}' missing")

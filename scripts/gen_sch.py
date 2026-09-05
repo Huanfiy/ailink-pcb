@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate hardware/ailink.kicad_sch for the ailink board (product.md v0.3)."""
+"""Generate hardware/ailink.kicad_sch for the ailink board (product.md v0.4)."""
 import os
 import sys
 
@@ -9,7 +9,7 @@ import sch_writer
 import symlib
 from sch_writer import SchDoc
 
-HW = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware")
+HW = os.environ.get('AILINK_HW', os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware"))
 G = 1.27
 
 
@@ -20,7 +20,7 @@ def g(n):
 
 # ---------------------------------------------------------------- footprints
 FP = {
-    "R": "Resistor_SMD:R_0603_1608Metric",
+    "R": "Resistor_SMD:R_0402_1005Metric",
     "C": "Capacitor_SMD:C_0603_1608Metric",
     "MCU": "Package_QFP:LQFP-64_10x10mm_P0.5mm",
     "FLASH": "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm",
@@ -31,15 +31,13 @@ FP = {
     "FB": "Inductor_SMD:L_0603_1608Metric",
     "XTAL": "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
     "USBC": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
-    "H1X3": "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical",
     "H1X4": "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical",
-    "H2X3": "Connector_PinHeader_2.54mm:PinHeader_2x03_P2.54mm_Vertical",
-    "H2X5": "Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Vertical",
-    "SW": "Button_Switch_SMD:SW_SPST_PTS810",
     "RGB": "LED_SMD:LED_RGB_1210",
     "LED": "LED_SMD:LED_0603_1608Metric",
-    "TP": "TestPoint:TestPoint_Pad_D1.5mm",
-    "MH": "MountingHole:MountingHole_2.2mm_M2",
+    "TP": "TestPoint:TestPoint_Pad_D1.0mm",
+    "STRADDLE": "ailink:Header_2x06_P2.54mm_Straddle",
+    "SERVICE": "ailink:Service_2x03_P1.27mm",
+    "CONSOLE": "ailink:Console_1x03_P1.27mm",
 }
 
 
@@ -48,15 +46,15 @@ def _ps(mpn, spec):
 
 
 # Production BOM attributes (hidden symbol properties via place(props=...)).
-_R220 = _ps("RC0603FR-07220RL", "0603 ±1%")
-_R51K = _ps("RC0603FR-075K1L", "0603 ±1%")
-_R10K = _ps("RC0603JR-0710KL", "0603 ±5%")
-_R620 = _ps("RC0603JR-07620RL", "0603 ±5%")
-_R150 = _ps("RC0603JR-07150RL", "0603 ±5%")
-_R1K = _ps("RC0603JR-071KL", "0603 ±5%")
-_R1M = _ps("RC0603JR-071ML", "0603 ±5%")
-_R0 = _ps("RC0603JR-070RL", "0603 0Ω")
-_C100N = _ps("CC0603KRX7R8BB104", "0603 X7R/X5R 25V")
+_R220 = _ps("RC0402FR-07220RL", "0402 ±1%")
+_R51K = _ps("RC0402FR-075K1L", "0402 ±1%")
+_R10K = _ps("RC0402JR-0710KL", "0402 ±5%")
+_R620 = _ps("RC0402JR-07620RL", "0402 ±5%")
+_R150 = _ps("RC0402JR-07150RL", "0402 ±5%")
+_R1K = _ps("RC0402JR-071KL", "0402 ±5%")
+_R1M = _ps("RC0402JR-071ML", "0402 ±5%")
+_R0 = _ps("RC0402JR-070RL", "0402 0Ω")
+_C100N = _ps("CC0402KRX7R7BB104", "0402 X7R 16V")
 _C1U = _ps("CL10A105KA8NNNC", "0603 X7R/X5R 25V")
 _C22U = _ps("CL10A225KA8NNNC", "0603 X7R/X5R 25V")
 _C22U_VCAP = _ps("CL10A225KA8NNNC", "0603 X7R/X5R 25V 低ESR（VCAP）")
@@ -75,15 +73,16 @@ PARTS = {
     "D7": _ps("SMAJ5.0A", "SMA 单向TVS 5V/400W"),
     "D8": _ps("FM-B3227RGBA-HG", "国星1210(3227)共阳RGB,装配前按规格书核对1-4脚序"),
     "D9": _ps("KT-0603G", "0603绿色,VF~3V@2mA"),
-    "F1": _ps("0ZCJ0035FF2E", "1206 PTC 350mA/6V"),
+    "F1": _ps("0ZCJ0075FF2E", "1206 PTC 750mA/6V; temperature derating required"),
     "FB1": _ps("BLM18AG601SN1D", "0603 600R@100MHz"),
     "X1": _ps("YSX321SL-16MHz或TXC 7V等效", "3225 16MHz ±10ppm CL=12pF"),
     "J1": _ps("HRO TYPE-C-31-M-12", "USB-C 16P USB2.0"),
-    "J2": _HDR14, "J6": _HDR14,
-    "J3": _ps("PinHeader 2x3 2.54 直针", "PinHeader 2x3 2.54 直针"),
-    "J4": _ps("PinHeader 2x5 2.54 直针", "PinHeader 2x5 2.54 直针"),
-    "J5": _ps("PinHeader 1x3 2.54 直针", "PinHeader 1x3 2.54 直针"),
-    "SW1": _SW, "SW2": _SW,
+    "J2": _ps("TSW-106-07-L-D", "2x6 2.54mm straight header, straddle fixture; qualify sample"),
+    "J6": _ps("PCB contacts", "2x3 1.27mm pogo pads; no component"),
+    "J3": _HDR14,
+    "J4": _HDR14,
+    "J5": _ps("PCB contacts", "3x 1.27mm console pads; no component"),
+
     "R1": _R51K, "R2": _R51K, "R3": _R1M,
     "R4": _R10K, "R5": _R10K, "R6": _R0,
     "R7": _R10K, "R8": _R10K, "R9": _R10K,
@@ -94,12 +93,27 @@ PARTS = {
     "C10": _C18P, "C11": _C18P, "C12": _C100N, "C13": _C10N, "C14": _C100N,
 }
 PARTS.update({f"R{i}": _R220 for i in range(10, 27)})
+PARTS.update({
+    "U4": _ps("TPS2553DBVR", "Active-high, auto-retry current limiter with reverse-voltage protection"),
+    "U5": _ps("TPS2553DBVR", "Active-high, auto-retry current limiter with reverse-voltage protection"),
+    "R31": _R10K,
+    "R36": _ps("RC0402FR-07226KL", "226k 1%; 3V3 limit 101..142mA incl resistor tolerance"),
+    "R37": _ps("RC0402FR-07147KL", "147k 1%; 5V limit 157..213mA incl resistor tolerance"),
+    "R38": _R10K,
+})
+for i in range(32, 36):
+    PARTS[f"R{i}"] = _ps("RC0402FR-071K3L", "1.3k 1%; activity LED approx 1mA")
+for i in range(15, 19):
+    PARTS[f"C{i}"] = _C100N
+for i in range(10, 14):
+    PARTS[f"D{i}"] = _ps("LTST-C190KFKT" if i % 2 == 0 else "LTST-C190KGKT",
+                           "0603 amber TX" if i % 2 == 0 else "0603 green RX")
 
 
 def build():
     d = SchDoc("ailink - USB debug bridge (2x CDC + CMSIS-DAP + 8x GPIO + DFU)",
-               paper="A2", rev="v0.3", company="ailink project",
-               date="2026-08-29")
+               paper="A2", rev="v0.4", company="ailink project",
+               date="2026-09-05")
 
     _place = d.place
 
@@ -107,6 +121,9 @@ def build():
         """Inject MPN/Spec from PARTS when the caller does not pass props."""
         if props is None:
             props = PARTS.get(ref)
+        from gen_product_lib import product_footprint_id
+        if kwargs.get('footprint'):
+            kwargs['footprint'] = product_footprint_id(kwargs['footprint'])
         return _place(ref, *args, props=props, **kwargs)
 
     d.place = place
@@ -125,13 +142,13 @@ def build():
     S_XTAL = d.use_symbol("Device", "Crystal_GND24")
     S_RGB = d.use_symbol("Device", "LED_RGBA")
     S_LED = d.use_symbol("Device", "LED")
-    S_SW = d.use_symbol("Switch", "SW_Push")
+    S_PSW = d.use_symbol("ailink", "TPS2553DBV")
     S_TP = d.use_symbol("Connector", "TestPoint")
     S_C1X3 = d.use_symbol("Connector_Generic", "Conn_01x03")
     S_C1X4 = d.use_symbol("Connector_Generic", "Conn_01x04")
     S_C2X3 = d.use_symbol("Connector_Generic", "Conn_02x03_Odd_Even")
     S_C2X5 = d.use_symbol("Connector_Generic", "Conn_02x05_Odd_Even")
-    S_MH = d.use_symbol("Mechanical", "MountingHole")
+    S_C2X6 = d.use_symbol("Connector_Generic", "Conn_02x06_Odd_Even")
     S_W25 = d.use_symbol(
         "Memory_Flash", "W25Q32JVSS",
         embed_name="ailink:W25Q64JVSSIQ", value="W25Q64JVSSIQ",
@@ -266,11 +283,11 @@ def build():
     auto_gnd(d1, "2")
 
     # ================= power =================
-    d.text("POWER: VBUS -> 3V3 (no power to target)", g(24), g(20))
+    d.text("POWER: VBUS -> 3V3 + protected target outputs", g(24), g(20))
     y_pw = 24  # chain rail y (grid units)
     d.power("VBUS", g(76), g(y_pw - 2))
     d.wire((g(76), g(y_pw - 2)), (g(76), g(y_pw)))
-    f1 = d.place("F1", S_FUSE, g(83), g(y_pw), rot=90, value="350mA PTC",
+    f1 = d.place("F1", S_FUSE, g(83), g(y_pw), rot=90, value="750mA PTC",
                  footprint=FP["FUSE"], props=PARTS["F1"])
     d.wire((g(76), g(y_pw)), f1.pin("1"))
     # node VBUS_P
@@ -346,6 +363,9 @@ def build():
     auto_label(u1, "10", "LED3")
     auto_label(u1, "37", "A_TX")
     auto_label(u1, "38", "A_RX")
+    for pin, net in (("11", "LED_A_TX"), ("24", "LED_A_RX"),
+                     ("25", "LED_B_TX"), ("39", "LED_B_RX"), ("40", "PWR_OUT_EN")):
+        auto_label(u1, pin, net)
     # right-side signals
     right = {
         "14": "TGPIO2", "15": "TGPIO6", "16": "CON_TX", "17": "CON_RX",
@@ -361,14 +381,14 @@ def build():
     for pin, net in right.items():
         auto_label(u1, pin, net)
     # unused pins -> no-connect (ER-10)
-    for pin in ("2", "3", "4", "11", "24", "25", "39", "40", "51", "52",
+    for pin in ("2", "3", "4", "51", "52",
                 "53", "54", "23", "50", "55", "56", "57", "58", "59"):
         nc(u1, pin)
 
     # decoupling bank
     d.text("DECOUPLING", g(252), g(52), size=1.5)
     for i, ref in enumerate(("C3", "C4", "C5", "C6")):
-        vert_rc(ref, S_C, g(252 + i * 8), g(60), "100nF", FP["C"], "+3V3")
+        vert_rc(ref, S_C, g(252 + i * 8), g(60), "100nF", "Capacitor_SMD:C_0402_1005Metric", "+3V3")
     c7 = vert_rc("C7", S_C, g(252), g(74), "2.2uF", FP["C"], "VCAP")
     # VDDA filter
     fb1 = d.place("FB1", S_FBEAD, g(262), g(74), rot=90, value="FB 600R@100MHz",
@@ -382,7 +402,7 @@ def build():
     d.pwr_flag(pfb1[0], round(pfb1[1] - g(2), 4))
     d.junction(pfb1)
     c8 = vert_rc("C8", S_C, g(274), g(74), "1uF", FP["C"], "VDDA")
-    c9 = vert_rc("C9", S_C, g(282), g(74), "100nF", FP["C"], "VDDA")
+    c9 = vert_rc("C9", S_C, g(282), g(74), "100nF", "Capacitor_SMD:C_0402_1005Metric", "VDDA")
 
     # ================= crystal =================
     d.text("HSE 16MHz", g(150), g(60), size=1.5)
@@ -400,16 +420,9 @@ def build():
     # ================= boot / reset =================
     d.text("BOOT & RESET", g(150), g(96), size=1.5)
     r4 = vert_rc("R4", S_R, g(152), g(104), "10k", FP["R"], "BOOT0")
-    sw1 = d.place("SW1", S_SW, g(166), g(110), value="S_BOOT",
-                  footprint=FP["SW"], props=PARTS["SW1"])
-    auto_label(sw1, "1", "BOOT0")
-    auto_pwr(sw1, "2", net="+3V3")
     r5 = vert_rc("R5", S_R, g(180), g(104), "10k", FP["R"], "BOOT1")
-    c12 = vert_rc("C12", S_C, g(152), g(120), "100nF", FP["C"], "NRST")
-    sw2 = d.place("SW2", S_SW, g(166), g(126), value="S_RST",
-                  footprint=FP["SW"], props=PARTS["SW2"])
-    auto_label(sw2, "1", "NRST")
-    auto_gnd(sw2, "2")
+    c12 = vert_rc("C12", S_C, g(152), g(120), "100nF", "Capacitor_SMD:C_0402_1005Metric", "NRST")
+    vert_rc("R31", S_R, g(170), g(120), "10k", FP["R"], "+3V3", bottom="NRST")
 
     # ================= SPI NOR =================
     d.text("SPI NOR FLASH (norflash0)", g(108), g(150), size=2.0)
@@ -429,7 +442,7 @@ def build():
                  bottom="FLASH_WP")
     r9 = vert_rc("R9", S_R, g(170), g(160), "10k", FP["R"], "+3V3",
                  bottom="FLASH_HOLD")
-    c14 = vert_rc("C14", S_C, g(146), g(174), "100nF", FP["C"], "+3V3")
+    c14 = vert_rc("C14", S_C, g(146), g(174), "100nF", "Capacitor_SMD:C_0402_1005Metric", "+3V3")
 
     # ================= LEDs =================
     d.text("STATUS RGB (PC0/1/2 active-low) + POWER LED", g(24), g(150),
@@ -452,20 +465,21 @@ def build():
     auto_gnd(d9, "1")
 
     # ================= target interfaces =================
-    d.text("TARGET INTERFACES - 3V3 ONLY / NO POWER OUT", g(324), g(20))
+    d.text("TARGET: SIGNALS 3V3 / PROTECTED 3V3 + 5V OUTPUTS", g(324), g(20))
 
     # ---- J2 SWD
-    d.text("J2 TARGET SWD", g(330), g(30), size=1.5)
+    d.text("TARGET SWD -> J2 BACK", g(330), g(30), size=1.5)
     series_r("R10", g(336), g(36), "T_SWCLK", "T_SWCLK_J")
     series_r("R11", g(336), g(40), "T_SWDIO", "T_SWDIO_J")
     series_r("R12", g(336), g(44), "T_nRESET", "T_nRESET_J")
-    j2 = d.place("J2", S_C1X4, g(368), g(38), value="SWD_OUT",
-                 footprint=FP["H1X4"], value_at=(g(368), g(46)),
-                 props=PARTS["J2"])
-    auto_gnd(j2, "1", bend="up")
-    auto_label(j2, "2", "T_SWCLK_J", shape="passive")
-    auto_label(j2, "3", "T_SWDIO_J", shape="passive")
-    auto_label(j2, "4", "T_nRESET_J", shape="passive")
+    j2 = d.place("J2", S_C2X6, g(410), g(44), value="TARGET_2x6_STRADDLE",
+                 footprint=FP["STRADDLE"], value_at=(g(410), g(60)))
+    for pin, net in {"1": "A_TX_J", "3": "A_RX_J", "7": "B_TX_J", "9": "B_RX_J",
+                     "4": "T_SWCLK_J", "6": "T_SWDIO_J", "8": "T_nRESET_J",
+                     "10": "+3V3_OUT", "12": "+5V_OUT"}.items():
+        auto_label(j2, pin, net, shape="passive")
+    for pin in ("2", "5", "11"):
+        auto_label(j2, pin, "GND", shape="passive")
     d2 = d.place("D2", S_SRV, g(340), g(58), value="SRV05-4",
                  footprint=FP["SOT236"], value_at=(g(352), g(67)),
                  props=PARTS["D2"])
@@ -477,20 +491,11 @@ def build():
     auto_gnd(d2, "2")
 
     # ---- J3 dual UART
-    d.text("J3 UART A + B", g(330), g(74), size=1.5)
+    d.text("DUAL UART -> J2 FRONT", g(330), g(74), size=1.5)
     series_r("R13", g(336), g(80), "A_TX", "A_TX_J")
     series_r("R14", g(336), g(84), "A_RX", "A_RX_J")
     series_r("R15", g(336), g(88), "B_TX", "B_TX_J")
     series_r("R16", g(336), g(92), "B_RX", "B_RX_J")
-    j3 = d.place("J3", S_C2X3, g(368), g(84), value="UART_AB",
-                 footprint=FP["H2X3"], value_at=(g(368), g(92)),
-                 props=PARTS["J3"])
-    auto_label(j3, "1", "A_TX_J", shape="passive")
-    auto_label(j3, "3", "A_RX_J", shape="passive")
-    auto_gnd(j3, "5")
-    auto_label(j3, "2", "B_TX_J", shape="passive")
-    auto_label(j3, "4", "B_RX_J", shape="passive")
-    auto_gnd(j3, "6")
     d3 = d.place("D3", S_SRV, g(340), g(104), value="SRV05-4",
                  footprint=FP["SOT236"], value_at=(g(352), g(113)),
                  props=PARTS["D3"])
@@ -502,30 +507,27 @@ def build():
     auto_gnd(d3, "2")
 
     # ---- J4 GPIO
-    d.text("J4 GPIO 0-7", g(330), g(120), size=1.5)
+    d.text("J3 / J4 OPTIONAL GPIO HEADERS", g(330), g(120), size=1.5)
     for i in range(8):
         series_r(f"R{17 + i}", g(336), g(126 + 4 * i),
                  f"TGPIO{i}", f"TGPIO{i}_J")
-    j4 = d.place("J4", S_C2X5, g(368), g(134), value="GPIO_0_7",
-                 footprint=FP["H2X5"], value_at=(g(368), g(144)),
-                 props=PARTS["J4"])
-    for i in range(4):
-        auto_label(j4, str(1 + 2 * i), f"TGPIO{i}_J", shape="passive")
-        auto_label(j4, str(2 + 2 * i), f"TGPIO{i + 4}_J", shape="passive")
-    auto_gnd(j4, "9")
-    auto_gnd(j4, "10")
+    for ref, start, y in (("J3", 0, 128), ("J4", 4, 146)):
+        j = d.place(ref, S_C1X4, g(405), g(y), value=f"GPIO_{start}_{start+3}",
+                    footprint=FP["H1X4"], dnp=True, value_at=(g(405), g(y+9)))
+        for i in range(4):
+            auto_label(j, str(i+1), f"TGPIO{start+i}_J", shape="passive")
     d4 = d.place("D4", S_SRV, g(340), g(162), value="SRV05-4",
                  footprint=FP["SOT236"], value_at=(g(352), g(171)),
                  props=PARTS["D4"])
-    # 通道分配按 PCB 侧 J4→ESD 最短路径优化（东列引脚就近接 D4/D5 东列焊盘）
-    for k, i in (("1", 0), ("3", 1), ("4", 5), ("6", 4)):
+    # Each GPIO ESD array protects the four holes on one long edge.
+    for k, i in (("1", 0), ("3", 1), ("4", 2), ("6", 3)):
         auto_label(d4, k, f"TGPIO{i}_J", shape="passive")
     auto_pwr(d4, "5", net="+3V3")
     auto_gnd(d4, "2")
     d5 = d.place("D5", S_SRV, g(388), g(162), value="SRV05-4",
                  footprint=FP["SOT236"], value_at=(g(400), g(171)),
                  props=PARTS["D5"])
-    for k, i in (("1", 2), ("3", 3), ("4", 7), ("6", 6)):
+    for k, i in (("1", 4), ("3", 5), ("4", 6), ("6", 7)):
         auto_label(d5, k, f"TGPIO{i}_J", shape="passive")
     auto_pwr(d5, "5", net="+3V3")
     auto_gnd(d5, "2")
@@ -535,7 +537,7 @@ def build():
     series_r("R25", g(336), g(186), "CON_TX", "CON_TX_J")
     series_r("R26", g(336), g(190), "CON_RX", "CON_RX_J")
     j5 = d.place("J5", S_C1X3, g(368), g(188), value="CONSOLE",
-                 footprint=FP["H1X3"], value_at=(g(368), g(195)),
+                 footprint=FP["CONSOLE"], dnp=True, in_bom=False, value_at=(g(368), g(195)),
                  props=PARTS["J5"])
     auto_label(j5, "1", "CON_TX_J", shape="passive")
     auto_label(j5, "2", "CON_RX_J", shape="passive")
@@ -550,24 +552,22 @@ def build():
     auto_pwr(d6, "5", net="+3V3")
     auto_gnd(d6, "2")
 
-    # ---- J6 own SWD (pads only, DNP)
-    d.text("J6 AILINK SELF-SWD (pads, not fitted)", g(330), g(222), size=1.5)
-    j6 = d.place("J6", S_C1X4, g(344), g(232), value="SELF_SWD",
-                 footprint=FP["H1X4"], dnp=True, in_bom=False,
-                 value_at=(g(344), g(240)), props=PARTS["J6"])
+    # ---- J6 factory SWD + ROM boot and reset contacts
+    d.text("J6 FACTORY SWD / ROM RECOVERY (pogo contacts)", g(330), g(222), size=1.5)
+    j6 = d.place("J6", S_C2X3, g(365), g(236), value="FACTORY",
+                 footprint=FP["SERVICE"], dnp=True, in_bom=False,
+                 value_at=(g(365), g(246)))
     auto_pwr(j6, "1", net="+3V3")
-    auto_label(j6, "2", "MCU_SWDIO")
-    auto_label(j6, "3", "MCU_SWCLK")
-    auto_gnd(j6, "4")
+    auto_label(j6, "2", "GND", shape="passive")
+    for pin, net in (("3", "MCU_SWDIO"), ("4", "MCU_SWCLK"), ("5", "NRST"), ("6", "BOOT0")):
+        auto_label(j6, pin, net)
 
     # ================= test points =================
     d.text("TEST POINTS", g(24), g(196), size=1.5)
-    tps = [("TP1", "VBUS"), ("TP2", "+3V3"), ("TP3", "GND"),
-           ("TP4", "NRST"), ("TP5", "BOOT0"),
-           ("TP6", "USB_DP"), ("TP7", "USB_DM")]
+    tps = [("TP1", "VBUS"), ("TP6", "USB_DP"), ("TP7", "USB_DM")]
     for i, (ref, net) in enumerate(tps):
         tp = d.place(ref, S_TP, g(24 + i * 10), g(202), value=net,
-                     footprint=FP["TP"], value_hide=True)
+                     footprint=FP["TP"], value_hide=True, in_bom=False)
         p0 = tp.pin("1")
         dx, dy = tp.pin_out_dir("1")
         p1 = (round(p0[0] + dx * g(2), 4), round(p0[1] + dy * g(2), 4))
@@ -579,11 +579,36 @@ def build():
         else:
             d.label_right(net, p1, shape="passive")
 
-    # ================= mounting holes =================
-    d.text("MOUNTING M2 x4", g(24), g(216), size=1.5)
-    for i in range(4):
-        d.place(f"H{i + 1}", S_MH, g(24 + i * 8), g(222), value="M2",
-                footprint=FP["MH"])
+    # ================= activity indicators =================
+    d.text("UART ACTIVITY: independent GPIO, active low", g(24), g(222), size=1.5)
+    for i, name in enumerate(("A_TX", "A_RX", "B_TX", "B_RX")):
+        x = g(30 + i*24)
+        net = f"ACT_{name}_A"
+        vert_rc(f"R{32+i}", S_R, x, g(232), "1.3k", FP["R"], "+3V3", bottom=net)
+        led = d.place(f"D{10+i}", S_LED, x, g(246), rot=90, value=f"LED_{name}", footprint=FP["LED"])
+        auto_label(led, "2", net, shape="passive")
+        auto_label(led, "1", f"LED_{name}")
+
+    # ================= protected target supplies =================
+    d.text("TARGET POWER: independent limiting / reverse protection", g(142), g(200), size=1.5)
+    for ref, supply, output, x, rref, rval, cstart in (
+        ("U4", "+3V3", "+3V3_OUT", 166, "R36", "226k", 15),
+        ("U5", "VBUS_P", "+5V_OUT", 250, "R37", "147k", 17),
+    ):
+        sw = d.place(ref, S_PSW, g(x), g(222), value="TPS2553DBVR", footprint=FP["SOT236"],
+                     value_at=(g(x), g(212)))
+        auto_label(sw, "1", supply, shape="passive")
+        auto_gnd(sw, "2")
+        auto_label(sw, "3", "PWR_OUT_EN")
+        nc(sw, "4")  # Autonomous current limiting and thermal auto-retry.
+        auto_label(sw, "5", f"{ref}_ILIM", shape="passive")
+        auto_label(sw, "6", output, shape="passive")
+        vert_rc(rref, S_R, g(x+22), g(241), rval, FP["R"], f"{ref}_ILIM")
+        vert_rc(f"C{cstart}", S_C, g(x-14), g(243), "100nF", "Capacitor_SMD:C_0402_1005Metric", supply)
+        vert_rc(f"C{cstart+1}", S_C, g(x+4), g(243), "100nF", "Capacitor_SMD:C_0402_1005Metric", output)
+    vert_rc("R38", S_R, g(210), g(222), "10k", FP["R"], "PWR_OUT_EN")
+    d.text("J6 carries 3V3 reference, GND, own SWD, NRST and BOOT0. No buttons.", g(24), g(278), size=1.5)
+    d.text("Output targets: 3V3 100mA / 5V 150mA; USB configured only. Prototype validation required.", g(24), g(284), size=1.5)
 
     return d
 

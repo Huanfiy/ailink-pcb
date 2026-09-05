@@ -14,7 +14,10 @@ _lib_cache = {}
 def load_library(lib_nickname):
     if lib_nickname in _lib_cache:
         return _lib_cache[lib_nickname]
-    path = os.path.join(KICAD_SYMBOL_DIR, lib_nickname + ".kicad_sym")
+    if lib_nickname == "ailink":
+        path = os.path.join(os.path.dirname(__file__), "..", "hardware", "lib", "ailink.kicad_sym")
+    else:
+        path = os.path.join(KICAD_SYMBOL_DIR, lib_nickname + ".kicad_sym")
     with open(path) as f:
         tree = sexp.parse(f.read())
     symbols = {}
