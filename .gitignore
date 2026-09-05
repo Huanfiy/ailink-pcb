@@ -23,9 +23,9 @@ _autosave-*
 *.dsn
 *.ses
 
-# 交付物入库（outputs/ 为正式交付的一部分）
+# 流水线产出不入库（本地生成即可）
+outputs/
 *.xml
-!outputs/**
 !hardware/ailink.net
 
 # 第三方二进制（自行下载到 tools/）
