@@ -6,8 +6,9 @@
 | --- | --- |
 | 设计与接口基线 | [product.md](product.md) |
 | KiCad 工程 | [原理图](hardware/ailink.kicad_sch) · [PCB](hardware/ailink.kicad_pcb) |
-| 外形设计文档 | [.cursor/design/ailink-compact-pcb-design.md](.cursor/design/ailink-compact-pcb-design.md) |
-| 正反面布局 | [.cursor/design/layout-options.svg](.cursor/design/layout-options.svg) |
+| 外形设计文档 | [docs/design/ailink-compact-pcb-design.md](docs/design/ailink-compact-pcb-design.md) |
+| 正反面布局 | [docs/design/layout-options.svg](docs/design/layout-options.svg) |
+| DRC 问题与约束评估 | [docs/error/2026-09-05-kicad-drc-routing-constraint-assessment.md](docs/error/2026-09-05-kicad-drc-routing-constraint-assessment.md) |
 | 制造与装配条件 | [outputs/FAB-NOTES.md](outputs/FAB-NOTES.md) |
 | 实施与验证说明 | [outputs/design-notes.md](outputs/design-notes.md) |
 | 配套固件 | [../ai-link](../ai-link) · [USB 设计](../ai-link/docs/design/usb-bridge.md) |

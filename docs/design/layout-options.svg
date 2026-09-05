@@ -1,0 +1,702 @@
+<svg xmlns="http://www.w3.org/2000/svg" aria-labelledby="title desc" width="1600" height="780" viewBox="0 0 1600 780" role="img">
+  <title id="title">ailink v0.4 A 方案 · 实际 PCB 正反面布局</title>
+  <desc id="desc">同一块 42×22 mm 四层产品板。USB 在左，2×6 夹板针在右。正面为双 UART 和逐针对齐的四颗通信灯；PWR、STATUS 在 USB 座两侧。背面沿长轴翻面显示 SWD、电源、D1 USB ESD、Flash 及维护触点。长边各四个可选焊接 GPIO 孔，无 BOOT 或 RST 按键。元件中心和焊盘来自 PCB，器件本体为示意。</desc>
+  <style>text{font-family:"Noto Sans CJK SC","DejaVu Sans",sans-serif}</style>
+  <rect width="1600" height="780" fill="#f5f7fa" />
+  <text x="60" y="45" fill="#172838" font-size="29" text-anchor="start" font-weight="700">ailink · 产品版布局</text>
+  <text x="1530" y="44" fill="#42566b" font-size="17" text-anchor="end">v0.4 / 42 × 22 mm / 无用户按键</text>
+  <text x="60" y="104" fill="#172838" font-size="23" text-anchor="start" font-weight="700">A 方案 · 正面</text>
+  <text x="60" y="136" fill="#42566b" font-size="16" text-anchor="start">双 UART · TX/RX 指示灯正对针位</text>
+  <path d="M 60 177 V 157 H 564 V 177" fill="none" stroke="#8191a3" />
+  <text x="312" y="151" fill="#42566b" font-size="14" text-anchor="middle">42 mm</text>
+  <rect x="60" y="185" width="504" height="264" rx="24" fill="#1c2b30" stroke="#53656b" stroke-width="2" id="F-board" data-width-mm="42" data-height-mm="22" />
+  <rect x="564.0000000000001" y="225.56" width="30.48" height="182.88" fill="#182029" rx="2" />
+  <path d="M 530.4 240.80000000000007 H 666.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 530.4 271.28000000000014 H 666.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 530.4 301.76000000000005 H 666.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 530.4 332.2400000000001 H 666.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 530.4 362.72 H 666.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 530.4 393.2000000000001 H 666.0" stroke="#d5bf85" stroke-width="7.68" />
+  <rect x="78.0" y="401.0" width="18.0" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="78.0" y="417.80000000000007" width="18.0" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="120.0" y="417.80000000000007" width="18.0" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="120.0" y="401.0" width="18.0" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="88.8" y="399.20000000000005" width="38.400000000000006" height="32.400000000000006" fill="#a9d4d3" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-D8" data-ref="D8" data-center-x-mm="4.0" data-center-y-mm="19.200000000000003">
+    <title>D8 RGB_CA</title>
+  </rect>
+  <rect x="217.8" y="196.39999999999998" width="20.4" height="20.4" fill="#cfb574" rx="3.0599999999999996" />
+  <circle cx="228.0" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <circle cx="258.4800000000001" cy="206.59999999999997" r="10.2" fill="#cfb574" />
+  <circle cx="258.4800000000001" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <circle cx="288.96" cy="206.59999999999997" r="10.2" fill="#cfb574" />
+  <circle cx="288.96" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <circle cx="319.44000000000005" cy="206.59999999999997" r="10.2" fill="#cfb574" />
+  <circle cx="319.44000000000005" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <circle cx="134.40000000000003" cy="282.32" r="3.9000000000000004" fill="#cfb574" />
+  <circle cx="134.40000000000003" cy="282.32" r="3.9000000000000004" fill="#f5f7fa" />
+  <circle cx="134.40000000000003" cy="351.68" r="3.9000000000000004" fill="#cfb574" />
+  <circle cx="134.40000000000003" cy="351.68" r="3.9000000000000004" fill="#f5f7fa" />
+  <rect x="143.03999999999996" y="274.4" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="143.03999999999996" y="283.99999999999994" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="143.03999999999996" y="300.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="312.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="318.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="330.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="342.8" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="143.03999999999996" y="352.4" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="143.03999999999996" y="352.4" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="143.03999999999996" y="342.8" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="143.03999999999996" y="336.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="324.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="306.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="294.2" width="17.4" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="143.03999999999996" y="283.99999999999994" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="143.03999999999996" y="274.4" width="17.4" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="128.16000000000005" y="259.1600000000001" width="25.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="137.16000000000005" y="254.9600000000001" width="7.199999999999999" height="20.4" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="80.99999999999997" y="259.1600000000001" width="19.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="86.99999999999997" y="257.9600000000001" width="7.199999999999999" height="14.399999999999999" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="128.16000000000005" y="362.8399999999999" width="25.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="137.16000000000005" y="358.63999999999993" width="7.199999999999999" height="20.4" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="80.99999999999997" y="362.8399999999999" width="19.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="86.99999999999997" y="361.63999999999993" width="7.199999999999999" height="14.399999999999999" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="395.9999999999999" y="299.6000000000001" width="16.799999999999997" height="14.399999999999999" fill="#cfb574" rx="2.1599999999999997" />
+  <rect x="369.6" y="299.6000000000001" width="16.799999999999997" height="14.399999999999999" fill="#cfb574" rx="2.1599999999999997" />
+  <rect x="369.6" y="319.99999999999994" width="16.799999999999997" height="14.399999999999999" fill="#cfb574" rx="2.1599999999999997" />
+  <rect x="395.9999999999999" y="319.99999999999994" width="16.799999999999997" height="14.399999999999999" fill="#cfb574" rx="2.1599999999999997" />
+  <rect x="371.99999999999994" y="302.0" width="38.400000000000006" height="30.0" fill="#a4b1b8" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-X1" data-ref="X1" data-center-x-mm="27.599999999999994" data-center-y-mm="11.0">
+    <title>X1 16MHz 3225 CL=12pF</title>
+  </rect>
+  <text x="391.19999999999993" y="320.0" fill="#172838" font-size="10" text-anchor="middle">HSE</text>
+  <rect x="217.8" y="417.20000000000005" width="20.4" height="20.4" fill="#cfb574" rx="3.0599999999999996" />
+  <circle cx="228.0" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <circle cx="258.4800000000001" cy="427.40000000000003" r="10.2" fill="#cfb574" />
+  <circle cx="258.4800000000001" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <circle cx="288.96" cy="427.40000000000003" r="10.2" fill="#cfb574" />
+  <circle cx="288.96" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <circle cx="319.44000000000005" cy="427.40000000000003" r="10.2" fill="#cfb574" />
+  <circle cx="319.44000000000005" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <rect x="93.30000000000007" y="212.89999999999998" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="112.19999999999993" y="212.89999999999998" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="98.4" y="213.79999999999995" width="19.200000000000003" height="9.600000000000001" fill="#75c799" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-D9" data-ref="D9" data-center-x-mm="4.0" data-center-y-mm="2.799999999999997">
+    <title>D9 PWR_LED_GREEN</title>
+  </rect>
+  <rect x="340.79999999999995" y="360.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="354.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="348.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="342.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="336.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="330.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="324.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="318.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="312.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="306.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="300.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="294.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="288.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="282.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="276.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="340.79999999999995" y="270.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="325.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="319.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="313.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="307.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="301.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="295.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="289.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="283.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="277.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="271.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="265.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="259.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="253.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="247.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="241.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="235.2" y="239.60000000000002" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="270.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="276.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="282.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="288.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="294.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="300.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="306.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="312.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="318.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="324.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="330.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="336.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="342.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="348.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="354.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="204.60000000000002" y="360.2" width="18.6" height="3.5999999999999996" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="235.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="241.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="247.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="253.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="259.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="265.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="271.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="277.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="283.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="289.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="295.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="301.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="307.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="313.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="319.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="325.2" y="375.79999999999995" width="3.5999999999999996" height="18.6" fill="#cfb574" rx="0.5399999999999999" />
+  <rect x="222.0" y="257.0" width="120" height="120" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-U1" data-ref="U1" data-center-x-mm="18.5" data-center-y-mm="11.0">
+    <title>U1 STM32F446RET6</title>
+  </rect>
+  <text x="282.0" y="320.0" fill="#e2eaf0" font-size="15" text-anchor="middle">STM32F446</text>
+  <rect x="372.3" y="343.1" width="11.399999999999999" height="10.8" fill="#cfb574" rx="1.62" />
+  <rect x="372.3" y="361.7" width="11.399999999999999" height="10.8" fill="#cfb574" rx="1.62" />
+  <rect x="373.2" y="348.20000000000005" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-C10" data-ref="C10" data-center-x-mm="26.5" data-center-y-mm="14.400000000000006">
+    <title>C10 18pF</title>
+  </rect>
+  <rect x="366.9600000000001" y="281.48" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="366.9600000000001" y="269.24000000000007" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="367.80000000000007" y="272.59999999999997" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-R6" data-ref="R6" data-center-x-mm="25.900000000000006" data-center-y-mm="7.799999999999997">
+    <title>R6 0</title>
+  </rect>
+  <rect x="473.69999999999993" y="265.58" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="492.60000000000014" y="265.58" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="478.79999999999984" y="266.47999999999996" width="19.200000000000003" height="9.600000000000001" fill="#75c799" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-D11" data-ref="D11" data-center-x-mm="35.69999999999999" data-center-y-mm="7.189999999999998">
+    <title>D11 LED_A_RX</title>
+  </rect>
+  <rect x="421.49999999999994" y="302.9000000000001" width="11.399999999999999" height="10.8" fill="#cfb574" rx="1.62" />
+  <rect x="421.49999999999994" y="284.29999999999995" width="11.399999999999999" height="10.8" fill="#cfb574" rx="1.62" />
+  <rect x="422.3999999999999" y="289.4" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-C11" data-ref="C11" data-center-x-mm="30.599999999999994" data-center-y-mm="9.5">
+    <title>C11 18pF</title>
+  </rect>
+  <rect x="473.69999999999993" y="235.10000000000008" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="492.60000000000014" y="235.10000000000008" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="478.79999999999984" y="236.00000000000006" width="19.200000000000003" height="9.600000000000001" fill="#e5ad5f" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-D10" data-ref="D10" data-center-x-mm="35.69999999999999" data-center-y-mm="4.650000000000006">
+    <title>D10 LED_A_TX</title>
+  </rect>
+  <rect x="526.7999999999998" y="233.00000000000006" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="526.7999999999998" y="263.47999999999996" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="526.7999999999998" y="293.96000000000004" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="526.7999999999998" y="324.43999999999994" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="526.7999999999998" y="354.92" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="526.7999999999998" y="385.3999999999999" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="473.69999999999993" y="326.53999999999996" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="492.60000000000014" y="326.53999999999996" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="478.79999999999984" y="327.43999999999994" width="19.200000000000003" height="9.600000000000001" fill="#e5ad5f" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-D12" data-ref="D12" data-center-x-mm="35.69999999999999" data-center-y-mm="12.269999999999996">
+    <title>D12 LED_B_TX</title>
+  </rect>
+  <rect x="473.69999999999993" y="357.02000000000004" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="492.60000000000014" y="357.02000000000004" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="478.79999999999984" y="357.92" width="19.200000000000003" height="9.600000000000001" fill="#75c799" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="F-D13" data-ref="D13" data-center-x-mm="35.69999999999999" data-center-y-mm="14.810000000000002">
+    <title>D13 LED_B_RX</title>
+  </rect>
+  <rect x="59.399999999999935" y="263.36" width="87.6" height="107.28" fill="#c5ced4" rx="5" stroke="#788b99" stroke-width="1" />
+  <rect x="61.20000000000003" y="272.0" width="8.399999999999999" height="90.0" fill="#25333d" rx="2" />
+  <text x="103.19999999999993" y="322.0" fill="#344a5a" font-size="13" text-anchor="middle">USB-C</text>
+  <text x="108.0" y="203.59999999999997" fill="#e3edf0" font-size="9" text-anchor="middle">PWR</text>
+  <text x="108.0" y="444.80000000000007" fill="#e3edf0" font-size="9" text-anchor="middle">STATUS</text>
+  <text x="168.0" y="428.0" fill="#e3edf0" font-size="9" text-anchor="middle">IO 3V3</text>
+  <text x="396.0" y="434.0" fill="#e3edf0" font-size="9" text-anchor="middle">v0.4</text>
+  <text x="228.0" y="234.80000000000007" fill="#e3edf0" font-size="9" text-anchor="middle">G0</text>
+  <text x="228.0" y="405.19999999999993" fill="#e3edf0" font-size="9" text-anchor="middle">G4</text>
+  <text x="258.4800000000001" y="234.80000000000007" fill="#e3edf0" font-size="9" text-anchor="middle">G1</text>
+  <text x="258.4800000000001" y="405.19999999999993" fill="#e3edf0" font-size="9" text-anchor="middle">G5</text>
+  <text x="288.96" y="234.80000000000007" fill="#e3edf0" font-size="9" text-anchor="middle">G2</text>
+  <text x="288.96" y="405.19999999999993" fill="#e3edf0" font-size="9" text-anchor="middle">G6</text>
+  <text x="319.44000000000005" y="234.80000000000007" fill="#e3edf0" font-size="9" text-anchor="middle">G3</text>
+  <text x="319.44000000000005" y="405.19999999999993" fill="#e3edf0" font-size="9" text-anchor="middle">G7</text>
+  <text x="458.39999999999986" y="243.80000000000007" fill="#e3edf0" font-size="9" text-anchor="middle">ATX</text>
+  <text x="458.39999999999986" y="274.28" fill="#e3edf0" font-size="9" text-anchor="middle">ARX</text>
+  <text x="458.39999999999986" y="304.76000000000005" fill="#e3edf0" font-size="9" text-anchor="middle">GND</text>
+  <text x="458.39999999999986" y="335.23999999999995" fill="#e3edf0" font-size="9" text-anchor="middle">BTX</text>
+  <text x="458.39999999999986" y="365.72" fill="#e3edf0" font-size="9" text-anchor="middle">BRX</text>
+  <text x="458.39999999999986" y="396.19999999999993" fill="#e3edf0" font-size="9" text-anchor="middle">GND</text>
+  <text x="480.0" y="203.59999999999997" fill="#e3edf0" font-size="9.600000000000001" text-anchor="middle">UART</text>
+  <text x="172.80000000000007" y="236.0" fill="#e3edf0" font-size="13.200000000000001" text-anchor="middle">ailink</text>
+  <text x="672.0" y="244.80000000000007" fill="#334b60" font-size="12" text-anchor="start"> 1  ATX</text>
+  <text x="672.0" y="275.28000000000014" fill="#334b60" font-size="12" text-anchor="start"> 3  ARX</text>
+  <text x="672.0" y="305.76000000000005" fill="#334b60" font-size="12" text-anchor="start"> 5  GND</text>
+  <text x="672.0" y="336.2400000000001" fill="#334b60" font-size="12" text-anchor="start"> 7  BTX</text>
+  <text x="672.0" y="366.72" fill="#334b60" font-size="12" text-anchor="start"> 9  BRX</text>
+  <text x="672.0" y="397.2000000000001" fill="#334b60" font-size="12" text-anchor="start">11  GND</text>
+  <text x="830" y="104" fill="#172838" font-size="23" text-anchor="start" font-weight="700">A 方案 · 背面</text>
+  <text x="830" y="136" fill="#42566b" font-size="16" text-anchor="start">SWD / 电源 · 沿长轴翻面，USB 保持在左</text>
+  <path d="M 830 177 V 157 H 1334 V 177" fill="none" stroke="#8191a3" />
+  <text x="1082" y="151" fill="#42566b" font-size="14" text-anchor="middle">42 mm</text>
+  <rect x="830" y="185" width="504" height="264" rx="24" fill="#1c2b30" stroke="#53656b" stroke-width="2" id="B-board" data-width-mm="42" data-height-mm="22" />
+  <rect x="821.5999999999999" y="263.0" width="103.19999999999999" height="108.0" fill="none" stroke="#6c8188" stroke-dasharray="5 5" />
+  <rect x="992.0" y="257.0" width="120" height="120" fill="none" stroke="#577078" stroke-dasharray="5 5" />
+  <rect x="1334.0000000000002" y="225.56" width="30.48" height="182.88" fill="#182029" rx="2" />
+  <path d="M 1300.4 393.19999999999993 H 1436.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 1300.4 362.71999999999986 H 1436.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 1300.4 332.23999999999995 H 1436.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 1300.4 301.7599999999999 H 1436.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 1300.4 271.28 H 1436.0" stroke="#d5bf85" stroke-width="7.68" />
+  <path d="M 1300.4 240.7999999999999 H 1436.0" stroke="#d5bf85" stroke-width="7.68" />
+  <rect x="987.8" y="417.20000000000005" width="20.4" height="20.4" fill="#cfb574" rx="3.0599999999999996" />
+  <circle cx="998.0" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <circle cx="1028.48" cy="427.40000000000003" r="10.2" fill="#cfb574" />
+  <circle cx="1028.48" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <circle cx="1058.96" cy="427.40000000000003" r="10.2" fill="#cfb574" />
+  <circle cx="1058.96" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <circle cx="1089.44" cy="427.40000000000003" r="10.2" fill="#cfb574" />
+  <circle cx="1089.44" cy="427.40000000000003" r="6.0" fill="#f5f7fa" />
+  <circle cx="904.4000000000001" cy="351.68" r="3.9000000000000004" fill="#cfb574" />
+  <circle cx="904.4000000000001" cy="351.68" r="3.9000000000000004" fill="#f5f7fa" />
+  <circle cx="904.4000000000001" cy="282.32" r="3.9000000000000004" fill="#cfb574" />
+  <circle cx="904.4000000000001" cy="282.32" r="3.9000000000000004" fill="#f5f7fa" />
+  <rect x="898.16" y="362.8399999999999" width="25.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="907.16" y="358.63999999999993" width="7.199999999999999" height="20.4" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="850.9999999999999" y="362.8399999999999" width="19.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="856.9999999999999" y="361.63999999999993" width="7.199999999999999" height="14.399999999999999" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="898.16" y="259.1600000000001" width="25.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="907.16" y="254.9600000000001" width="7.199999999999999" height="20.4" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="850.9999999999999" y="259.1600000000001" width="19.200000000000003" height="12.0" fill="#cfb574" rx="1.7999999999999998" />
+  <rect x="856.9999999999999" y="257.9600000000001" width="7.199999999999999" height="14.399999999999999" fill="#f5f7fa" rx="3.5999999999999996" />
+  <rect x="987.8" y="196.39999999999998" width="20.4" height="20.4" fill="#cfb574" rx="3.0599999999999996" />
+  <circle cx="998.0" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <circle cx="1028.48" cy="206.59999999999997" r="10.2" fill="#cfb574" />
+  <circle cx="1028.48" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <circle cx="1058.96" cy="206.59999999999997" r="10.2" fill="#cfb574" />
+  <circle cx="1058.96" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <circle cx="1089.44" cy="206.59999999999997" r="10.2" fill="#cfb574" />
+  <circle cx="1089.44" cy="206.59999999999997" r="6.0" fill="#f5f7fa" />
+  <rect x="1296.8" y="385.3999999999999" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="1296.8" y="354.92" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="1296.8" y="324.43999999999994" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="1296.8" y="293.96000000000004" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="1296.8" y="263.47999999999996" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="1296.8" y="233.00000000000006" width="31.200000000000003" height="15.600000000000001" fill="#cfb574" rx="2.3400000000000003" />
+  <rect x="883.7599999999999" y="367.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="883.7599999999999" y="379.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="884.5999999999999" y="371.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R2" data-ref="R2" data-center-x-mm="4.799999999999997" data-center-y-mm="6.0">
+    <title>R2 5.1k</title>
+  </rect>
+  <rect x="1150.16" y="330.44" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1150.16" y="342.67999999999995" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1151.0" y="333.80000000000007" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R26" data-ref="R26" data-center-x-mm="27.0" data-center-y-mm="9.099999999999994">
+    <title>R26 220</title>
+  </rect>
+  <rect x="1000.6399999999999" y="269.9600000000001" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1012.8800000000001" y="269.9600000000001" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1004.0" y="270.80000000000007" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R7" data-ref="R7" data-center-x-mm="15.0" data-center-y-mm="14.599999999999994">
+    <title>R7 10k</title>
+  </rect>
+  <rect x="1072.6399999999999" y="361.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1084.88" y="361.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1076.0" y="362.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R19" data-ref="R19" data-center-x-mm="21.0" data-center-y-mm="7.0">
+    <title>R19 220</title>
+  </rect>
+  <rect x="1171.7600000000002" y="403.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1171.7600000000002" y="415.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1172.6000000000001" y="407.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R14" data-ref="R14" data-center-x-mm="28.80000000000001" data-center-y-mm="3.0">
+    <title>R14 220</title>
+  </rect>
+  <rect x="857.3" y="342.49999999999994" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="875.9000000000001" y="342.49999999999994" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="862.4" y="343.3999999999999" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C1" data-ref="C1" data-center-x-mm="3.5" data-center-y-mm="8.400000000000006">
+    <title>C1 1uF</title>
+  </rect>
+  <rect x="992.4799999999999" y="361.28" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="1004.0" y="361.28" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="991.9999999999999" y="360.2" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C4" data-ref="C4" data-center-x-mm="14.299999999999997" data-center-y-mm="7.0">
+    <title>C4 100nF</title>
+  </rect>
+  <rect x="1168.64" y="308.35999999999996" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1180.8799999999999" y="308.35999999999996" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1172.0" y="309.19999999999993" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R16" data-ref="R16" data-center-x-mm="29.0" data-center-y-mm="11.400000000000006">
+    <title>R16 220</title>
+  </rect>
+  <rect x="1181.4799999999998" y="247.87999999999994" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1181.4799999999998" y="259.40000000000003" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1180.3999999999999" y="247.4" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C17" data-ref="C17" data-center-x-mm="29.599999999999994" data-center-y-mm="16.0">
+    <title>C17 100nF</title>
+  </rect>
+  <rect x="986.9000000000001" y="396.49999999999994" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="1005.5000000000001" y="396.49999999999994" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="991.9999999999999" y="397.3999999999999" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C7" data-ref="C7" data-center-x-mm="14.299999999999997" data-center-y-mm="3.9000000000000057">
+    <title>C7 2.2uF</title>
+  </rect>
+  <rect x="1084.88" y="385.28" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="1096.4" y="385.28" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="1084.4" y="384.2" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C3" data-ref="C3" data-center-x-mm="22.0" data-center-y-mm="5.0">
+    <title>C3 100nF</title>
+  </rect>
+  <rect x="1171.04" y="389.9600000000001" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1183.28" y="389.9600000000001" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1174.3999999999999" y="390.80000000000007" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R15" data-ref="R15" data-center-x-mm="29.19999999999999" data-center-y-mm="4.599999999999994">
+    <title>R15 220</title>
+  </rect>
+  <rect x="986.24" y="375.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="998.48" y="375.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="989.5999999999999" y="376.40000000000003" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R5" data-ref="R5" data-center-x-mm="13.799999999999997" data-center-y-mm="5.799999999999997">
+    <title>R5 10k</title>
+  </rect>
+  <rect x="1041.44" y="361.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1053.68" y="361.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1044.8000000000002" y="362.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R18" data-ref="R18" data-center-x-mm="18.400000000000006" data-center-y-mm="7.0">
+    <title>R18 220</title>
+  </rect>
+  <rect x="839.3000000000001" y="408.5" width="15.0" height="21.0" fill="#cfb574" rx="2.25" />
+  <rect x="872.9000000000001" y="408.5" width="15.0" height="21.0" fill="#cfb574" rx="2.25" />
+  <rect x="844.3999999999999" y="409.4" width="38.400000000000006" height="19.200000000000003" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-F1" data-ref="F1" data-center-x-mm="2.799999999999997" data-center-y-mm="2.5">
+    <title>F1 750mA PTC</title>
+  </rect>
+  <text x="863.5999999999999" y="422.0" fill="#e2eaf0" font-size="10" text-anchor="middle">F1</text>
+  <rect x="955.7" y="324.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="955.7" y="313.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="955.7" y="301.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="928.3999999999999" y="301.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="928.3999999999999" y="313.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="928.3999999999999" y="324.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="939.8" y="299.6" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-D1" data-ref="D1" data-center-x-mm="10.0" data-center-y-mm="11.0">
+    <title>D1 USBLC6-2SC6</title>
+  </rect>
+  <text x="950.0" y="320.0" fill="#e2eaf0" font-size="10" text-anchor="middle">D1</text>
+  <rect x="856.6399999999999" y="380.35999999999996" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="868.8800000000001" y="380.35999999999996" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="860.0" y="381.19999999999993" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R1" data-ref="R1" data-center-x-mm="3.0" data-center-y-mm="5.400000000000006">
+    <title>R1 5.1k</title>
+  </rect>
+  <rect x="940.6399999999999" y="199.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="952.8800000000001" y="199.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="944.0" y="200.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R28" data-ref="R28" data-center-x-mm="10.0" data-center-y-mm="20.5">
+    <title>R28 150</title>
+  </rect>
+  <rect x="1210.4" y="337.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="349.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="360.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="360.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="349.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="337.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1221.8" y="335.6" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-D2" data-ref="D2" data-center-x-mm="33.5" data-center-y-mm="8.0">
+    <title>D2 SRV05-4</title>
+  </rect>
+  <text x="1232.0" y="356.0" fill="#e2eaf0" font-size="10" text-anchor="middle">D2</text>
+  <rect x="974.24" y="251.96000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="986.48" y="251.96000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="977.5999999999999" y="252.80000000000007" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R8" data-ref="R8" data-center-x-mm="12.799999999999997" data-center-y-mm="16.099999999999994">
+    <title>R8 10k</title>
+  </rect>
+  <rect x="1210.4" y="229.99999999999997" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="241.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="252.80000000000004" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="252.80000000000004" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="241.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="229.99999999999997" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1221.8" y="227.6" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-U5" data-ref="U5" data-center-x-mm="33.5" data-center-y-mm="17.0">
+    <title>U5 TPS2553DBVR</title>
+  </rect>
+  <text x="1232.0" y="248.0" fill="#e2eaf0" font-size="10" text-anchor="middle">U5</text>
+  <rect x="1000.6399999999999" y="255.56000000000003" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1012.8800000000001" y="255.56000000000003" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1004.0" y="256.40000000000003" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R21" data-ref="R21" data-center-x-mm="15.0" data-center-y-mm="15.799999999999997">
+    <title>R21 220</title>
+  </rect>
+  <rect x="931.7599999999999" y="257.24000000000007" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="931.7599999999999" y="269.48" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="932.5999999999999" y="260.59999999999997" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R31" data-ref="R31" data-center-x-mm="8.799999999999997" data-center-y-mm="15.200000000000003">
+    <title>R31 10k</title>
+  </rect>
+  <rect x="1193.4799999999998" y="323.4799999999999" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1193.4799999999998" y="335.0" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1192.3999999999999" y="322.99999999999994" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C15" data-ref="C15" data-center-x-mm="30.599999999999994" data-center-y-mm="9.700000000000003">
+    <title>C15 100nF</title>
+  </rect>
+  <rect x="1195.7600000000002" y="211.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1195.7600000000002" y="223.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1196.6000000000001" y="215.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R37" data-ref="R37" data-center-x-mm="30.80000000000001" data-center-y-mm="19.0">
+    <title>R37 147k</title>
+  </rect>
+  <rect x="1072.6399999999999" y="265.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1084.88" y="265.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1076.0" y="266.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R23" data-ref="R23" data-center-x-mm="21.0" data-center-y-mm="15.0">
+    <title>R23 220</title>
+  </rect>
+  <rect x="1161.44" y="429.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1173.68" y="429.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1164.8000000000002" y="430.40000000000003" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R13" data-ref="R13" data-center-x-mm="28.400000000000006" data-center-y-mm="1.2999999999999972">
+    <title>R13 220</title>
+  </rect>
+  <rect x="1036.6399999999999" y="265.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1048.88" y="265.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1040.0" y="266.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R22" data-ref="R22" data-center-x-mm="18.0" data-center-y-mm="15.0">
+    <title>R22 220</title>
+  </rect>
+  <rect x="1150.16" y="355.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1150.16" y="367.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1151.0" y="359.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R25" data-ref="R25" data-center-x-mm="27.0" data-center-y-mm="7.0">
+    <title>R25 220</title>
+  </rect>
+  <rect x="1113.44" y="304.76" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1125.68" y="304.76" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1116.8000000000002" y="305.59999999999997" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R9" data-ref="R9" data-center-x-mm="24.400000000000006" data-center-y-mm="11.700000000000003">
+    <title>R9 10k</title>
+  </rect>
+  <rect x="1255.04" y="207.56000000000003" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1267.28" y="207.56000000000003" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1258.3999999999999" y="208.40000000000003" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R35" data-ref="R35" data-center-x-mm="36.19999999999999" data-center-y-mm="19.799999999999997">
+    <title>R35 1.3k</title>
+  </rect>
+  <rect x="925.04" y="241.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="937.28" y="241.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="928.4000000000001" y="242.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R4" data-ref="R4" data-center-x-mm="8.700000000000003" data-center-y-mm="17.0">
+    <title>R4 10k</title>
+  </rect>
+  <rect x="1186.16" y="403.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1186.16" y="415.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1187.0" y="407.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R20" data-ref="R20" data-center-x-mm="30.0" data-center-y-mm="3.0">
+    <title>R20 220</title>
+  </rect>
+  <rect x="850.6399999999999" y="245.96000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="862.8800000000001" y="245.96000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="854.0" y="246.80000000000007" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R3" data-ref="R3" data-center-x-mm="2.5" data-center-y-mm="16.599999999999994">
+    <title>R3 1M</title>
+  </rect>
+  <rect x="1168.64" y="285.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1180.8799999999999" y="285.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1172.0" y="286.40000000000003" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R38" data-ref="R38" data-center-x-mm="29.0" data-center-y-mm="13.299999999999997">
+    <title>R38 10k</title>
+  </rect>
+  <rect x="1114.6399999999999" y="207.56000000000003" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1126.88" y="207.56000000000003" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1118.0" y="208.40000000000003" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R24" data-ref="R24" data-center-x-mm="24.5" data-center-y-mm="19.799999999999997">
+    <title>R24 220</title>
+  </rect>
+  <rect x="1174.16" y="365.24000000000007" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1174.16" y="377.48" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1175.0" y="368.59999999999997" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R10" data-ref="R10" data-center-x-mm="29.0" data-center-y-mm="6.200000000000003">
+    <title>R10 220</title>
+  </rect>
+  <rect x="1030.3999999999999" y="226.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1030.3999999999999" y="237.80000000000004" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1030.3999999999999" y="249.20000000000007" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1057.7" y="249.20000000000007" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1057.7" y="237.80000000000004" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1057.7" y="226.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1041.8" y="224.00000000000003" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-D5" data-ref="D5" data-center-x-mm="18.5" data-center-y-mm="17.299999999999997">
+    <title>D5 SRV05-4</title>
+  </rect>
+  <text x="1052.0" y="244.40000000000003" fill="#e2eaf0" font-size="10" text-anchor="middle">D5</text>
+  <rect x="1114.88" y="322.87999999999994" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="1126.4" y="322.87999999999994" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="1114.4" y="321.79999999999995" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C9" data-ref="C9" data-center-x-mm="24.5" data-center-y-mm="10.200000000000003">
+    <title>C9 100nF</title>
+  </rect>
+  <rect x="1274.24" y="418.76" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1286.48" y="418.76" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1277.6000000000001" y="419.59999999999997" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R33" data-ref="R33" data-center-x-mm="37.80000000000001" data-center-y-mm="2.200000000000003">
+    <title>R33 1.3k</title>
+  </rect>
+  <circle cx="956.0" cy="282.19999999999993" r="6.0" fill="#cfb574" />
+  <rect x="1281.0800000000002" y="198.68" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1281.0800000000002" y="210.19999999999993" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1280.0000000000002" y="198.20000000000007" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C18" data-ref="C18" data-center-x-mm="37.900000000000006" data-center-y-mm="20.099999999999994">
+    <title>C18 100nF</title>
+  </rect>
+  <rect x="1114.1" y="341.3" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="1132.6999999999998" y="341.3" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="1119.2000000000003" y="342.2" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C8" data-ref="C8" data-center-x-mm="24.900000000000006" data-center-y-mm="8.5">
+    <title>C8 1uF</title>
+  </rect>
+  <rect x="999.1999999999999" y="290.24" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="999.1999999999999" y="305.47999999999996" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="999.1999999999999" y="320.7200000000001" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="999.1999999999999" y="335.96000000000004" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="1085.3000000000002" y="335.96000000000004" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="1085.3000000000002" y="320.7200000000001" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="1085.3000000000002" y="305.47999999999996" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="1085.3000000000002" y="290.24" width="19.5" height="7.800000000000001" fill="#cfb574" rx="1.1700000000000002" />
+  <rect x="1020.2" y="285.8" width="63.599999999999994" height="62.400000000000006" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-U2" data-ref="U2" data-center-x-mm="18.5" data-center-y-mm="11.0">
+    <title>U2 W25Q64JVSSIQ</title>
+  </rect>
+  <text x="1052.0" y="320.0" fill="#e2eaf0" font-size="10" text-anchor="middle">FLASH</text>
+  <rect x="904.6399999999999" y="199.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="916.8800000000001" y="199.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="908.0" y="200.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R27" data-ref="R27" data-center-x-mm="7.0" data-center-y-mm="20.5">
+    <title>R27 620</title>
+  </rect>
+  <circle cx="940.4000000000001" cy="384.19999999999993" r="6.0" fill="#cfb574" />
+  <rect x="1210.4" y="283.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="295.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="306.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="306.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="295.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="283.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1221.8" y="281.6" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-U4" data-ref="U4" data-center-x-mm="33.5" data-center-y-mm="12.5">
+    <title>U4 TPS2553DBVR</title>
+  </rect>
+  <text x="1232.0" y="302.0" fill="#e2eaf0" font-size="10" text-anchor="middle">U4</text>
+  <rect x="1195.7600000000002" y="271.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1195.7600000000002" y="283.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1196.6000000000001" y="275.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R36" data-ref="R36" data-center-x-mm="30.80000000000001" data-center-y-mm="14.0">
+    <title>R36 226k</title>
+  </rect>
+  <rect x="850.3999999999999" y="301.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="850.3999999999999" y="313.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="850.3999999999999" y="324.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="877.7" y="324.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="877.7" y="301.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="861.8" y="299.6" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-U3" data-ref="U3" data-center-x-mm="3.5" data-center-y-mm="11.0">
+    <title>U3 AP2112K-3.3</title>
+  </rect>
+  <text x="872.0" y="320.0" fill="#e2eaf0" font-size="10" text-anchor="middle">LDO</text>
+  <rect x="900.08" y="291.68" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="911.6" y="291.68" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="899.5999999999999" y="290.6" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C12" data-ref="C12" data-center-x-mm="6.599999999999994" data-center-y-mm="12.799999999999997">
+    <title>C12 100nF</title>
+  </rect>
+  <circle cx="950.0" cy="353.0" r="6.0" fill="#cfb574" />
+  <rect x="1195.7600000000002" y="299.24000000000007" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1195.7600000000002" y="311.48" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1196.6000000000001" y="302.59999999999997" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R34" data-ref="R34" data-center-x-mm="30.80000000000001" data-center-y-mm="11.700000000000003">
+    <title>R34 1.3k</title>
+  </rect>
+  <rect x="860.6" y="194.00000000000003" width="10.8" height="10.8" fill="#cfb574" rx="1.62" />
+  <circle cx="881.24" cy="199.40000000000003" r="5.4" fill="#cfb574" />
+  <circle cx="866.0" cy="214.64" r="5.4" fill="#cfb574" />
+  <circle cx="881.24" cy="214.64" r="5.4" fill="#cfb574" />
+  <circle cx="866.0" cy="229.87999999999994" r="5.4" fill="#cfb574" />
+  <circle cx="881.24" cy="229.87999999999994" r="5.4" fill="#cfb574" />
+  <rect x="839.8999999999999" y="208.69999999999996" width="11.399999999999999" height="10.8" fill="#cfb574" rx="1.62" />
+  <rect x="839.8999999999999" y="227.29999999999993" width="11.399999999999999" height="10.8" fill="#cfb574" rx="1.62" />
+  <rect x="840.8" y="213.80000000000004" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C13" data-ref="C13" data-center-x-mm="1.2999999999999972" data-center-y-mm="18.799999999999997">
+    <title>C13 10nF</title>
+  </rect>
+  <rect x="1030.3999999999999" y="377.5999999999999" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1030.3999999999999" y="388.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1030.3999999999999" y="400.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1057.7" y="400.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1057.7" y="388.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1057.7" y="377.5999999999999" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1041.8" y="375.2" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-D4" data-ref="D4" data-center-x-mm="18.5" data-center-y-mm="4.700000000000003">
+    <title>D4 SRV05-4</title>
+  </rect>
+  <text x="1052.0" y="395.59999999999997" fill="#e2eaf0" font-size="10" text-anchor="middle">D4</text>
+  <rect x="1210.4" y="391.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="403.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1210.4" y="414.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="414.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="403.4" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1237.6999999999998" y="391.99999999999994" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1221.8" y="389.6" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-D3" data-ref="D3" data-center-x-mm="33.5" data-center-y-mm="3.5">
+    <title>D3 SRV05-4</title>
+  </rect>
+  <text x="1232.0" y="410.0" fill="#e2eaf0" font-size="10" text-anchor="middle">D3</text>
+  <rect x="857.3" y="280.1000000000001" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="875.9000000000001" y="280.1000000000001" width="10.8" height="11.399999999999999" fill="#cfb574" rx="1.62" />
+  <rect x="862.4" y="281.00000000000006" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C2" data-ref="C2" data-center-x-mm="3.5" data-center-y-mm="13.599999999999994">
+    <title>C2 2.2uF</title>
+  </rect>
+  <rect x="1017.44" y="361.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1029.68" y="361.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1020.8000000000002" y="362.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R17" data-ref="R17" data-center-x-mm="16.400000000000006" data-center-y-mm="7.0">
+    <title>R17 220</title>
+  </rect>
+  <rect x="1168.64" y="349.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1180.8799999999999" y="349.16" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1172.0" y="350.0" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R11" data-ref="R11" data-center-x-mm="29.0" data-center-y-mm="8.0">
+    <title>R11 220</title>
+  </rect>
+  <rect x="1120.3999999999999" y="384.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1120.3999999999999" y="396.20000000000005" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1120.3999999999999" y="407.5999999999999" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1147.7" y="407.5999999999999" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1147.7" y="396.20000000000005" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1147.7" y="384.8" width="15.899999999999999" height="7.199999999999999" fill="#cfb574" rx="1.0799999999999998" />
+  <rect x="1131.8" y="382.4000000000001" width="20.4" height="34.8" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-D6" data-ref="D6" data-center-x-mm="26.0" data-center-y-mm="4.099999999999994">
+    <title>D6 SRV05-4</title>
+  </rect>
+  <text x="1142.0" y="402.80000000000007" fill="#e2eaf0" font-size="10" text-anchor="middle">D6</text>
+  <rect x="899.0" y="408.2" width="30.0" height="21.6" fill="#cfb574" rx="3.24" />
+  <rect x="947.0" y="408.2" width="30.0" height="21.6" fill="#cfb574" rx="3.24" />
+  <rect x="911.0" y="403.4" width="54.0" height="31.200000000000003" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-D7" data-ref="D7" data-center-x-mm="9.0" data-center-y-mm="2.5">
+    <title>D7 SMAJ5.0A</title>
+  </rect>
+  <text x="938.0" y="422.0" fill="#e2eaf0" font-size="10" text-anchor="middle">TVS</text>
+  <rect x="1094.48" y="243.68000000000004" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="1106.0000000000002" y="243.68000000000004" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="1094.0" y="242.60000000000002" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C6" data-ref="C6" data-center-x-mm="22.799999999999997" data-center-y-mm="16.799999999999997">
+    <title>C6 100nF</title>
+  </rect>
+  <rect x="1260.56" y="415.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1260.56" y="427.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1261.3999999999999" y="419.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R32" data-ref="R32" data-center-x-mm="36.19999999999999" data-center-y-mm="2.0">
+    <title>R32 1.3k</title>
+  </rect>
+  <rect x="1113.0800000000002" y="279.08000000000004" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1113.0800000000002" y="290.59999999999997" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1112.0000000000002" y="278.5999999999999" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C14" data-ref="C14" data-center-x-mm="23.900000000000006" data-center-y-mm="13.400000000000006">
+    <title>C14 100nF</title>
+  </rect>
+  <rect x="1194.6799999999998" y="246.68" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1194.6799999999998" y="258.19999999999993" width="7.4399999999999995" height="6.720000000000001" fill="#cfb574" rx="1.008" />
+  <rect x="1193.6" y="246.20000000000007" width="9.600000000000001" height="19.200000000000003" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C16" data-ref="C16" data-center-x-mm="30.69999999999999" data-center-y-mm="16.099999999999994">
+    <title>C16 100nF</title>
+  </rect>
+  <rect x="1112.6" y="429.2" width="10.8" height="10.8" fill="#cfb574" rx="1.62" />
+  <circle cx="1133.24" cy="434.59999999999997" r="5.4" fill="#cfb574" />
+  <circle cx="1148.48" cy="434.59999999999997" r="5.4" fill="#cfb574" />
+  <rect x="1168.64" y="327.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1180.8799999999999" y="327.56000000000006" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="1172.0" y="328.40000000000003" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R12" data-ref="R12" data-center-x-mm="29.0" data-center-y-mm="9.799999999999997">
+    <title>R12 220</title>
+  </rect>
+  <rect x="976.88" y="265.28" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="988.4" y="265.28" width="6.720000000000001" height="7.4399999999999995" fill="#cfb574" rx="1.008" />
+  <rect x="976.4" y="264.2" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-C5" data-ref="C5" data-center-x-mm="13.0" data-center-y-mm="15.0">
+    <title>C5 100nF</title>
+  </rect>
+  <rect x="1109.3000000000002" y="361.70000000000005" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="1128.1999999999998" y="361.70000000000005" width="10.5" height="11.399999999999999" fill="#cfb574" rx="1.575" />
+  <rect x="1114.4" y="362.6" width="19.200000000000003" height="9.600000000000001" fill="#8c7657" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-FB1" data-ref="FB1" data-center-x-mm="24.5" data-center-y-mm="6.799999999999997">
+    <title>FB1 FB 600R@100MHz</title>
+  </rect>
+  <rect x="928.6399999999999" y="220.75999999999996" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="940.8800000000001" y="220.75999999999996" width="6.48" height="7.68" fill="#cfb574" rx="0.972" />
+  <rect x="932.0" y="221.59999999999997" width="12" height="6.0" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R29" data-ref="R29" data-center-x-mm="9.0" data-center-y-mm="18.700000000000003">
+    <title>R29 150</title>
+  </rect>
+  <rect x="1105.76" y="403.63999999999993" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1105.76" y="415.88000000000005" width="7.68" height="6.48" fill="#cfb574" rx="0.972" />
+  <rect x="1106.6" y="407.0" width="6.0" height="12" fill="#0b131b" rx="1.5" stroke="#96a3aa" stroke-width="0.5" id="B-R30" data-ref="R30" data-center-x-mm="23.299999999999997" data-center-y-mm="3.0">
+    <title>R30 1k</title>
+  </rect>
+  <text x="998.0" y="446.0" fill="#e3edf0" font-size="9" text-anchor="middle">G0</text>
+  <text x="998.0" y="193.16000000000008" fill="#e3edf0" font-size="9" text-anchor="middle">G4</text>
+  <text x="1028.48" y="446.0" fill="#e3edf0" font-size="9" text-anchor="middle">G1</text>
+  <text x="1028.48" y="193.16000000000008" fill="#e3edf0" font-size="9" text-anchor="middle">G5</text>
+  <text x="1058.96" y="446.0" fill="#e3edf0" font-size="9" text-anchor="middle">G2</text>
+  <text x="1058.96" y="193.16000000000008" fill="#e3edf0" font-size="9" text-anchor="middle">G6</text>
+  <text x="1089.44" y="446.0" fill="#e3edf0" font-size="9" text-anchor="middle">G3</text>
+  <text x="1089.44" y="193.16000000000008" fill="#e3edf0" font-size="9" text-anchor="middle">G7</text>
+  <text x="1275.1999999999998" y="396.19999999999993" fill="#e3edf0" font-size="9" text-anchor="middle">GND</text>
+  <text x="1275.1999999999998" y="365.72" fill="#e3edf0" font-size="9" text-anchor="middle">CLK</text>
+  <text x="1275.1999999999998" y="335.23999999999995" fill="#e3edf0" font-size="9" text-anchor="middle">DIO</text>
+  <text x="1275.1999999999998" y="304.76000000000005" fill="#e3edf0" font-size="9" text-anchor="middle">nRST</text>
+  <text x="1275.1999999999998" y="274.28" fill="#e3edf0" font-size="9" text-anchor="middle">3V3</text>
+  <text x="1275.1999999999998" y="243.80000000000007" fill="#e3edf0" font-size="9" text-anchor="middle">5V</text>
+  <text x="1442.0" y="397.19999999999993" fill="#334b60" font-size="12" text-anchor="start"> 2  GND</text>
+  <text x="1442.0" y="366.71999999999986" fill="#334b60" font-size="12" text-anchor="start"> 4  CLK</text>
+  <text x="1442.0" y="336.23999999999995" fill="#334b60" font-size="12" text-anchor="start"> 6  DIO</text>
+  <text x="1442.0" y="305.7599999999999" fill="#334b60" font-size="12" text-anchor="start"> 8  nRST</text>
+  <text x="1442.0" y="275.28" fill="#334b60" font-size="12" text-anchor="start">10  3V3</text>
+  <text x="1442.0" y="244.7999999999999" fill="#334b60" font-size="12" text-anchor="start">12  5V</text>
+  <text x="60" y="483" fill="#42566b" font-size="16" text-anchor="start">器件中心与焊盘来自当前 PCB；省略走线。本体、USB 外壳和夹板针为外观示意。</text>
+  <rect x="60" y="524" width="470" height="166" rx="12" fill="#e8eef3" />
+  <text x="80" y="557" fill="#20384a" font-size="19" text-anchor="start" font-weight="700">正面：使用与识别</text>
+  <text x="80" y="591" fill="#42566b" font-size="14" text-anchor="start">USB 座上侧 PWR，下侧 RGB STATUS</text>
+  <text x="80" y="620" fill="#42566b" font-size="14" text-anchor="start">ATX / ARX / BTX / BRX 四灯与针脚对齐</text>
+  <text x="80" y="649" fill="#42566b" font-size="14" text-anchor="start">两条长边各 4 个 GPIO 孔，出厂不装排针</text>
+  <rect x="560" y="524" width="470" height="166" rx="12" fill="#e8eef3" />
+  <text x="580" y="557" fill="#20384a" font-size="19" text-anchor="start" font-weight="700">背面：电源与保护</text>
+  <text x="580" y="591" fill="#42566b" font-size="14" text-anchor="start">D1：USB ESD；U2：独立 Flash</text>
+  <text x="580" y="620" fill="#42566b" font-size="14" text-anchor="start">U4：3.3 V / 100 mA；U5：5 V / 150 mA（目标值）</text>
+  <text x="580" y="649" fill="#42566b" font-size="14" text-anchor="start">SWD、维护触点、固定启动与复位电路</text>
+  <rect x="1060" y="524" width="470" height="166" rx="12" fill="#e8eef3" />
+  <text x="1080" y="557" fill="#20384a" font-size="19" text-anchor="start" font-weight="700">结构与电气边界</text>
+  <text x="1080" y="591" fill="#42566b" font-size="14" text-anchor="start">42 × 22 mm · 四层 · 1.6 mm · R2</text>
+  <text x="1080" y="620" fill="#42566b" font-size="14" text-anchor="start">全部信号 3.3 V，5 V 针仅提供电源</text>
+  <text x="1080" y="649" fill="#42566b" font-size="14" text-anchor="start">夹板针装配、输出额定值及阻抗需验证</text>
+  <text x="60" y="739" fill="#42566b" font-size="16" text-anchor="start">前后面表示同一块板。背面上长边为 G4～G7；尾针从上到下为 12、10、8、6、4、2。</text>
+</svg>

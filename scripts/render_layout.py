@@ -143,7 +143,7 @@ def main():
         label(root,x+20,557,title,19,'#20384a',font_weight=700)
         for i,line in enumerate(lines):label(root,x+20,591+i*29,line,14)
     label(root,60,739,'前后面表示同一块板。背面上长边为 G4～G7；尾针从上到下为 12、10、8、6、4、2。',16)
-    dest=Path(__file__).resolve().parents[1]/'.cursor/design/layout-options.svg'
+    dest=Path(__file__).resolve().parents[1]/'docs/design/layout-options.svg'
     dest.parent.mkdir(parents=True,exist_ok=True)
     ET.indent(root)
     ET.ElementTree(root).write(dest,encoding='unicode')

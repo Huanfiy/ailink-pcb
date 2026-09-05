@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title desc">
+<title id="title">尾端 2×6 双排直针夹板安装的侧剖面</title><desc id="desc">仅尾端 J2 采用 2×6 夹板安装，侧边 GPIO 为普通通孔。两排直针中心距为待选常见规格 2.54 毫米，方针厚度 0.64 毫米，内侧净空 1.90 毫米；1.60 毫米 PCB 居中时每侧约有 0.15 毫米间隙。两面焊盘和针脚分别连接不同信号，排针需要夹具定位。</desc>
+<style>text{font-family:"Noto Sans CJK SC","WenQuanYi Zen Hei","DejaVu Sans",sans-serif;fill:#243247;font-size:17px}.title{font-size:22px;font-weight:700}.note{font-size:15px;fill:#526276}.dim{stroke:#728399;stroke-width:1.2;fill:none}.axis{stroke:#8797a8;stroke-width:1;stroke-dasharray:6 5}.inside{fill:#edf4f5;font-size:17px;text-anchor:middle}.tiny{font-size:14px}.callout{fill:#086b92;font-size:16px}.leader{stroke:#2185a8;stroke-width:1.4;fill:none}</style>
+<rect width="1200" height="660" fill="#f8fafc"/>
+<text x="48" y="38" class="title">尾端 2×6 / 2.54 mm 双排直针 · 夹板安装剖面</text>
+<text x="48" y="68" class="note">仅用于 J2，侧边 GPIO 为普通通孔。以下为常见规格演算；长度方向压缩绘制，不作为封装尺寸图。</text>
+<rect x="120" y="258" width="540" height="144" fill="#375750" stroke="#24443c" stroke-width="2"/>
+<path d="M 120 270 H 660 M 120 390 H 660" stroke="#a0b792" stroke-width="3" opacity=".8"/>
+<rect x="392" y="258" width="262" height="4" fill="#c39d4f"/><rect x="392" y="398" width="262" height="4" fill="#c39d4f"/>
+<path d="M 384 258 Q 397 253 403 244.5 H 640 Q 648 255 657 258 Z M 384 402 Q 397 407 403 415.5 H 640 Q 648 405 657 402 Z" fill="#b4bdc9" stroke="#77869a" stroke-width="1"/>
+<rect x="400" y="186.9" width="550" height="57.6" fill="#d8c58e" stroke="#a58c50"/>
+<rect x="400" y="415.5" width="550" height="57.6" fill="#d8c58e" stroke="#a58c50"/>
+<rect x="660" y="101.4" width="80" height="457.2" rx="5" fill="#222b38"/>
+<text x="700" y="323" class="inside">塑胶体</text><text x="700" y="348" class="inside tiny">板端外侧</text>
+<text x="350" y="327" class="inside">PCB 成品厚度 t ≈ 1.60 mm</text><text x="350" y="351" class="inside tiny">正反面焊盘分别连接两根不同的针</text>
+<text x="834" y="155" text-anchor="middle">插接端向外 →</text>
+<text x="532" y="176" text-anchor="middle" class="note">焊接尾部</text>
+<text x="630" y="92" text-anchor="middle" class="note">PCB 板端</text>
+<path d="M 660 85 V 575" stroke="#a24965" stroke-dasharray="5 5" stroke-width="1"/>
+<path d="M 390 215.7 H 1040 M 390 444.3 H 1040" class="axis"/>
+<path d="M 66 244.5 H 113 M 66 415.5 H 113 M 82 244.5 V 415.5" class="dim"/>
+<path d="M 82 244.5 l -4 8 h 8 z M 82 415.5 l -4 -8 h 8 z" fill="#728399"/>
+<text x="55" y="330" text-anchor="middle" transform="rotate(-90 55 330)" class="note">两排针内侧净空 S ≈ 1.90 mm</text>
+<path d="M 1010 215.7 H 1042 M 1010 444.3 H 1042 M 1024 215.7 V 444.3" class="dim"/>
+<path d="M 1024 215.7 l -4 8 h 8 z M 1024 444.3 l -4 -8 h 8 z" fill="#728399"/>
+<text x="1043" y="322">排距 P</text><text x="1043" y="348">2.54 mm</text>
+<path d="M 957 186.9 H 991 M 957 244.5 H 991 M 977 186.9 V 244.5" class="dim"/>
+<path d="M 977 186.9 l -3 6 h 6 z M 977 244.5 l -3 -6 h 6 z" fill="#728399"/>
+<text x="979" y="173" text-anchor="middle" class="note">d = 0.64</text>
+<path d="M 324 145 H 367 L 467 251.25" class="leader"/><circle cx="467" cy="251.25" r="3" fill="#2185a8"/>
+<text x="155" y="140" class="callout">上侧间隙 ≈ 0.15 mm</text>
+<path d="M 324 518 H 367 L 467 408.75" class="leader"/><circle cx="467" cy="408.75" r="3" fill="#2185a8"/>
+<text x="155" y="540" class="callout">下侧间隙 ≈ 0.15 mm</text>
+<text x="48" y="603">名义关系：S = 2.54 − 0.64 = 1.90 mm；G = S − t = 0.30 mm，居中时每面约 0.15 mm。</text>
+<text x="48" y="632" class="note">有间隙时不会自行夹紧，需夹具居中定位；最终按排针与 PCB 公差、实际焊盘和焊接试片验证。</text>
+</svg>
