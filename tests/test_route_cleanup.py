@@ -1,42 +1,12 @@
-"""Regression tests; run with the system Python that provides pcbnew."""
+"""cleanup_routes regression tests; run with the system Python that provides pcbnew."""
 from pathlib import Path
 import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import pcbnew
-import astar_router as ar
 import pcb_common as pc
 from cleanup_routes import clean_pass
-
-
-class PolylineTests(unittest.TestCase):
-    def setUp(self):
-        self.settings = ar.STEP, ar.CLR
-        ar.set_step(.05, .155)
-
-    def tearDown(self):
-        ar.set_step(*self.settings)
-
-    def test_decimal_collinear_points_collapse(self):
-        path = [(0, 101 + i, 99 + i) for i in range(50)]
-        segments, vias = ar.path_to_geometry(path)
-        self.assertEqual(segments, [(0, [ar.coord(path[0][1:]), ar.coord(path[-1][1:])])])
-        self.assertEqual(vias, [])
-
-    def test_round_pad_corner_remains_routable(self):
-        grid = ar.Grid()
-        shape = pcbnew.SHAPE_CIRCLE(pc.pt(115, 110), pc.mm(.9))
-        grid.block_shape(ar.F, shape, .23)
-        self.assertTrue(grid.is_free(ar.F, ar.cell(115.9, 110.9)))
-        self.assertFalse(grid.is_free(ar.F, ar.cell(115.95, 110)))
-
-    def test_corner_and_layer_change_preserved(self):
-        path = [(0, 100, 100), (0, 101, 100), (0, 101, 101),
-                (1, 101, 101), (1, 102, 101)]
-        segments, vias = ar.path_to_geometry(path)
-        self.assertEqual([len(points) for _, points in segments], [3, 2])
-        self.assertEqual(vias, [ar.coord((101, 101))])
 
 
 class CleanupTests(unittest.TestCase):
@@ -63,24 +33,10 @@ class CleanupTests(unittest.TestCase):
         return pad
 
     def track(self, start, end, layer):
-        track = pcbnew.PCB_TRACK(self.board)
-        track.SetStart(pc.pt(start, 110))
-        track.SetEnd(pc.pt(end, 110))
-        track.SetWidth(pc.mm(.15))
-        track.SetLayer(layer)
-        track.SetNet(self.net)
-        self.board.Add(track)
-        return track
+        return pc.add_track(self.board, self.net, layer, [(start, 110), (end, 110)], .15)[0]
 
     def via(self, x):
-        via = pcbnew.PCB_VIA(self.board)
-        via.SetPosition(pc.pt(x, 110))
-        via.SetWidth(pc.mm(.5))
-        via.SetDrill(pc.mm(.3))
-        via.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
-        via.SetNet(self.net)
-        self.board.Add(via)
-        return via
+        return pc.add_via(self.board, self.net, (x, 110), .5, .3)
 
     def report(self, item, kind='via_dangling'):
         return {'violations': [{'type': kind, 'items': [{'uuid': item.m_Uuid.AsString()}]}]}

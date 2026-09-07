@@ -10,38 +10,40 @@ import os
 import math
 import pcbnew
 import pcb_common as pc
-import astar_router as ar
+import grid_router as gr
 from fanout_product import Geometry,connected_groups
 from product_config import PLANE_NETS,POWER_WIDTH_NETS,PROTECTED_NETS
 
 
 def seeds(group,grid):
+    cfg=grid.config
     out={}
     for item in group:
         if item.GetClass()=='PAD':
-            layers=[i for i,l in ar.LAYER_ID.items() if item.IsOnLayer(l)]
+            layers=[i for i in cfg.layers if item.IsOnLayer(gr.LAYER_ID[i])]
             points=[item.GetPosition()]
         elif item.GetClass()=='PCB_VIA':
-            layers=list(ar.LAYER_ID);points=[item.GetPosition()]
+            layers=list(cfg.layers);points=[item.GetPosition()]
         else:
-            layers=[i for i,l in ar.LAYER_ID.items() if item.GetLayer()==l]
+            layers=[i for i in cfg.layers if item.GetLayer()==gr.LAYER_ID[i]]
             points=[item.GetStart(),item.GetEnd()]
         for layer in layers:
             for point in points:
-                node=(layer,*ar.cell(pc.to_mm(point.x),pc.to_mm(point.y)))
-                if 0<=node[1]<ar.NX and 0<=node[2]<ar.NY and grid.track_allowed(layer,node[1],node[2]):
+                node=(layer,*cfg.cell(pc.to_mm(point.x),pc.to_mm(point.y)))
+                if cfg.in_bounds(node[1],node[2]) and grid.track_allowed(layer,node[1],node[2]):
                     out[node]=(pc.to_mm(point.x),pc.to_mm(point.y))
     return out
 
 
-def join_net(board,net,step):
+def join_net(board,net,step,inner=False):
     power=net in PLANE_NETS
-    ar.TRACK_W=.2 if net in POWER_WIDTH_NETS else .15
-    ar.set_step(step,.155)
+    cfg=gr.RouterConfig(step=step,clearance=.155,
+                        track_w=.2 if net in POWER_WIDTH_NETS else .15,
+                        layers=gr.WITH_INNER if inner else gr.OUTER)
     geometry=Geometry(board)
     groups=connected_groups(geometry,net,with_zones=power)
     if len(groups)<=1:return True
-    grid=ar.build_grid(board,{net})
+    grid=gr.build_grid(board,cfg,{net})
     groups.sort(key=lambda g:-len(g))
     merged=groups.pop(0)
     while groups:
@@ -54,18 +56,18 @@ def join_net(board,net,step):
             if not source or not target:continue
             accepted=False
             for attempt in range(24):
-                path=ar.astar(grid,set(source),set(target))
+                path=gr.astar(grid,set(source),set(target))
                 if not path:break
-                segs,vias=ar.path_to_geometry(path)
+                segs,vias=gr.path_to_geometry(cfg,path)
                 first,last=path[0],path[-1]
-                segs=[(first[0],[source[first],ar.coord(first[1:])])]+segs+[
-                    (last[0],[ar.coord(last[1:]),target[last]])]
+                segs=[(first[0],[source[first],cfg.coord(first[1:])])]+segs+[
+                    (last[0],[cfg.coord(last[1:]),target[last]])]
                 bad_vias=[point for point in vias if not geometry.free_via(net,pc.pt(*point))]
                 if bad_vias:
                     for point in bad_vias:grid.block_via_disc(*point,.08)
                     continue
                 bad_tracks=[(layer,a,b) for layer,points in segs for a,b in zip(points,points[1:])
-                            if not geometry.free_track(net,ar.LAYER_ID[layer],pc.pt(*a),pc.pt(*b),ar.TRACK_W)]
+                            if not geometry.free_track(net,gr.LAYER_ID[layer],pc.pt(*a),pc.pt(*b),cfg.track_w)]
                 if bad_tracks:
                     # A diagonal grid edge can clip a clearance capsule even
                     # when its end cells are free. Block that crossing and
@@ -74,8 +76,8 @@ def join_net(board,net,step):
                         n=max(1,math.ceil(math.dist(a,b)/(step/3)))
                         for k in range(n+1):
                             p=(a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n)
-                            if geometry.free_track(net,ar.LAYER_ID[layer],pc.pt(*p),pc.pt(*p),ar.TRACK_W):continue
-                            ar.Grid.block_disc(grid,layer,*p,step*.8)
+                            if geometry.free_track(net,gr.LAYER_ID[layer],pc.pt(*p),pc.pt(*p),cfg.track_w):continue
+                            grid.block_disc(layer,*p,step*.8)
                     source={node:p for node,p in source.items() if grid.track_allowed(*node)}
                     target={node:p for node,p in target.items() if grid.track_allowed(*node)}
                     if not source or not target:break
@@ -83,7 +85,7 @@ def join_net(board,net,step):
                 accepted=True
                 break
             if not accepted:continue
-            ar.add_route(board,net,segs,vias)
+            gr.add_route(board,cfg,net,segs,vias)
             if power:pcbnew.ZONE_FILLER(board).Fill(board.Zones())
             merged+=group;groups.remove(group)
             # Refresh connectivity after a route: touching another same-net
@@ -100,7 +102,8 @@ def join_net(board,net,step):
 
 
 def main():
-    if os.environ.get('AILINK_INNER_SIGNALS')=='1':ar.enable_inner_signals()
+    # L3 may carry short signal escapes; L2 and the rear USB reference stay continuous.
+    inner=os.environ.get('AILINK_INNER_SIGNALS')=='1'
     board=pcbnew.LoadBoard(pc.PCB)
     selected=sys.argv[1:] or sorted(n.GetNetname() for n in board.GetNetsByName().values()
                                   if n.GetNetname() not in ('',)+PLANE_NETS+PROTECTED_NETS
@@ -109,7 +112,7 @@ def main():
     for step in (.1,.05,.025):
         failed=[]
         for net in pending:
-            if join_net(board,net,step):print(f'{net}: connected',flush=True)
+            if join_net(board,net,step,inner):print(f'{net}: connected',flush=True)
             else:failed.append(net)
             pcbnew.SaveBoard(pc.PCB,board)
         pending=failed
@@ -121,7 +124,7 @@ def main():
         if net in selected:
             continue
         for step in (.1,.05,.025):
-            if join_net(board,net,step):
+            if join_net(board,net,step,inner):
                 print(f'{net}: filled-plane connectivity preserved',flush=True)
                 break
         else:
