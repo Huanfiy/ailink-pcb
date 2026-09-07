@@ -5,7 +5,8 @@
                                        coarse-to-fine ladder, save the board
   astar_router.py --probe [--soft] NET reachability report only, no board writes
   astar_router.py --dump NET x0 y0 x1 y1
-                                       blocked/via maps as PNG (needs Pillow)
+                                       blocked/via maps as PNG in the system
+                                       temp dir (needs Pillow)
 
 Board selection follows pcb_common (AILINK_HW / AILINK_PCB). Not part of
 run_pipeline.sh; keep it for diagnosing why a net cannot be completed.
@@ -154,6 +155,7 @@ if __name__ == "__main__":
             rc |= probe_net(n, soft=soft)
         sys.exit(rc)
     if args[0] == "--dump":
-        dump_maps(args[1], *map(float, args[2:6]), out_dir=pc.HW)
+        import tempfile
+        dump_maps(args[1], *map(float, args[2:6]), out_dir=tempfile.gettempdir())
     else:
         main(args)
