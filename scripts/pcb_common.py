@@ -1,10 +1,9 @@
 """Shared helpers for PCB generation scripts (pcbnew API)."""
 import os
-import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import sexp
+import netlist
 
 import pcbnew
 
@@ -33,49 +32,70 @@ def rect_shape(rect):
     return pcbnew.SHAPE_RECT(mm(x0), mm(y0), mm(round(x1 - x0, 6)), mm(round(y1 - y0, 6)))
 
 
+def _vec(p):
+    """Accept a VECTOR2I or an (x, y) millimetre tuple."""
+    return p if isinstance(p, pcbnew.VECTOR2I) else pt(*p)
+
+
+def _net(board, net):
+    return board.GetNetsByName()[net] if isinstance(net, str) else net
+
+
+def footprint_by_ref(board, ref):
+    fp = board.FindFootprintByReference(ref)
+    if fp is None:
+        raise KeyError(ref)
+    return fp
+
+
+def pad_pos(board, ref, number, digits=3):
+    """Pad centre in millimetres; digits=None returns the unrounded value."""
+    for pad in footprint_by_ref(board, ref).Pads():
+        if str(pad.GetNumber()) == str(number):
+            pos = pad.GetPosition()
+            x, y = to_mm(pos.x), to_mm(pos.y)
+            return (x, y) if digits is None else (round(x, digits), round(y, digits))
+    raise KeyError(f"{ref}-{number}")
+
+
+def add_track(board, net, layer, points, width, locked=False):
+    """Add a polyline of tracks; zero-length legs are skipped. Returns the tracks."""
+    net = _net(board, net)
+    out = []
+    for a, b in zip(points, points[1:]):
+        a, b = _vec(a), _vec(b)
+        if a == b:
+            continue
+        t = pcbnew.PCB_TRACK(board)
+        t.SetStart(a)
+        t.SetEnd(b)
+        t.SetWidth(mm(width))
+        t.SetLayer(layer)
+        t.SetNet(net)
+        if locked:
+            t.SetLocked(True)
+        board.Add(t)
+        out.append(t)
+    return out
+
+
+def add_via(board, net, pos, dia, drill, locked=False):
+    """Add a through via (F.Cu-B.Cu). Returns the via."""
+    v = pcbnew.PCB_VIA(board)
+    v.SetPosition(_vec(pos))
+    v.SetWidth(mm(dia))
+    v.SetDrill(mm(drill))
+    v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+    v.SetNet(_net(board, net))
+    if locked:
+        v.SetLocked(True)
+    board.Add(v)
+    return v
+
+
 def load_netlist():
-    """Return (components, nets):
-    components: ref -> {footprint, value, dnp}
-    nets: netname -> [(ref, pad), ...]
-    """
-    net_path = "/tmp/ailink_pcb.net"
-    subprocess.run(["kicad-cli", "sch", "export", "netlist",
-                    "--format", "kicadsexpr", "-o", net_path, SCH],
-                   check=True, capture_output=True)
-    tree = sexp.parse(open(net_path).read())
-    root_uuid = str(sexp.find_all(sexp.parse(open(SCH).read()), 'uuid')[0][1])
-    comps = {}
-    comp_node = [x for x in tree if isinstance(x, list) and x and x[0] == "components"][0]
-    for c in [x for x in comp_node if isinstance(x, list) and x[0] == "comp"]:
-        ref = str([f for f in c if isinstance(f, list) and f[0] == "ref"][0][1])
-        fp_node = [f for f in c if isinstance(f, list) and f[0] == "footprint"]
-        val_node = [f for f in c if isinstance(f, list) and f[0] == "value"]
-        props = [f for f in c if isinstance(f, list) and f[0] == "property"]
-        def prop_value(prop, key):
-            nodes = sexp.find_all(prop, key)
-            return str(nodes[0][1]) if nodes and len(nodes[0])>1 else ''
-        properties = {prop_value(p,'name'):prop_value(p,'value') for p in props}
-        dnp = 'dnp' in properties
-        stamps = sexp.find_all(c,'tstamps')
-        comps[ref] = {
-            "footprint": str(fp_node[0][1]) if fp_node else "",
-            "value": str(val_node[0][1]) if val_node else "",
-            "dnp": dnp,
-            "exclude_bom": 'exclude_from_bom' in properties,
-            "properties": {k:v for k,v in properties.items() if k in ('MPN','Spec')},
-            "path": '/' + root_uuid + '/' + str(stamps[0][1]) if stamps else '',
-        }
-    nets = {}
-    nets_node = [x for x in tree if isinstance(x, list) and x and x[0] == "nets"][0]
-    for n in [x for x in nets_node if isinstance(x, list) and x[0] == "net"]:
-        name = str([f for f in n if isinstance(f, list) and f[0] == "name"][0][1])
-        nodes = []
-        for f in [x for x in n if isinstance(x, list) and x[0] == "node"]:
-            ref = str([q for q in f if isinstance(q, list) and q[0] == "ref"][0][1])
-            pin = str([q for q in f if isinstance(q, list) and q[0] == "pin"][0][1])
-            nodes.append((ref, pin))
-        nets[name] = nodes
-    return comps, nets
+    """Return (components, nets) of the project schematic; see netlist.load."""
+    return netlist.load(SCH)
 
 
 def load_footprint(fpid):

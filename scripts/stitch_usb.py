@@ -35,10 +35,7 @@ def main():
         candidates.sort(key=distance)
         for p in candidates:
             if not geometry.free_via('GND',p):continue
-            via=pcbnew.PCB_VIA(board)
-            via.SetPosition(p);via.SetWidth(pc.mm(.5));via.SetDrill(pc.mm(.3))
-            via.SetLayerPair(pcbnew.F_Cu,pcbnew.B_Cu);via.SetNet(board.GetNetsByName()['GND'])
-            board.Add(via);geometry.add(via);ground.append(p)
+            geometry.add(pc.add_via(board,'GND',p,.5,.3));ground.append(p)
             print(f'USB return via: {pc.to_mm(p.x):.3f},{pc.to_mm(p.y):.3f}, distance {distance(p):.2f} mm')
             break
         else:missing.append((pc.to_mm(origin.x),pc.to_mm(origin.y)))

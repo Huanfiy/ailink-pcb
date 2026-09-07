@@ -2,34 +2,18 @@
 """Golden connectivity check: asserts the generated schematic netlist matches
 product.md v0.4 (§5.1 pin table + §4 protection topology) exactly."""
 import os
-import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import sexp
+import netlist
 
 HW = os.environ.get('AILINK_HW', os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware"))
 SCH = os.path.join(HW, "ailink.kicad_sch")
-NET = "/tmp/ailink_verify.net"
 
 
 def load_nets():
-    subprocess.run(["kicad-cli", "sch", "export", "netlist",
-                    "--format", "kicadsexpr", "-o", NET, SCH],
-                   check=True, capture_output=True)
-    tree = sexp.parse(open(NET).read())
-    nets_node = [x for x in tree if isinstance(x, list) and x and x[0] == "nets"][0]
-    nets = {}
-    pad2net = {}
-    for n in [x for x in nets_node if isinstance(x, list) and x[0] == "net"]:
-        name = str([f for f in n if isinstance(f, list) and f[0] == "name"][0][1])
-        nodes = set()
-        for f in [x for x in n if isinstance(x, list) and x[0] == "node"]:
-            ref = str([q for q in f if isinstance(q, list) and q[0] == "ref"][0][1])
-            pin = str([q for q in f if isinstance(q, list) and q[0] == "pin"][0][1])
-            nodes.add((ref, pin))
-            pad2net[(ref, pin)] = name
-        nets[name] = nodes
+    nets = {name: set(nodes) for name, nodes in netlist.nets(netlist.export(SCH)).items()}
+    pad2net = {node: name for name, nodes in nets.items() for node in nodes}
     return nets, pad2net
 
 

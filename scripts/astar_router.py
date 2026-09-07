@@ -401,22 +401,9 @@ def path_to_geometry(path):
 def add_route(board, netname, segs, vias):
     net = board.GetNetsByName()[netname]
     for layer, ps in segs:
-        for a, b in zip(ps, ps[1:]):
-            if a == b:
-                continue
-            t = pcbnew.PCB_TRACK(board)
-            t.SetStart(pt(*a)); t.SetEnd(pt(*b))
-            t.SetWidth(mm(TRACK_W))
-            t.SetLayer(LAYER_ID[layer])
-            t.SetNet(net)
-            board.Add(t)
-    for x, y in vias:
-        v = pcbnew.PCB_VIA(board)
-        v.SetPosition(pt(x, y))
-        v.SetWidth(mm(VIA_D)); v.SetDrill(mm(VIA_DRILL))
-        v.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
-        v.SetNet(net)
-        board.Add(v)
+        pc.add_track(board, net, LAYER_ID[layer], ps, TRACK_W)
+    for xy in vias:
+        pc.add_via(board, net, xy, VIA_D, VIA_DRILL)
 
 
 def _pad_hw_hh(pad):

@@ -9,7 +9,7 @@ from product_config import MCU_CENTER,PROTECTED_NETS
 def main():
     board=pcbnew.LoadBoard(pc.PCB)
     geometry=Geometry(board)
-    fp=next(fp for fp in board.GetFootprints() if fp.GetReference()=='U1')
+    fp=pc.footprint_by_ref(board,'U1')
     # Hand-routed nets keep their own escapes (OSC_XO has no U1 pad anyway).
     pads=[pad for pad in fp.Pads() if pad.GetNetname() and
           not pad.GetNetname().startswith('unconnected') and
@@ -29,13 +29,9 @@ def main():
             if pad.GetNetname()=='+3V3' and not on_plane('+3V3',end):continue
             if not geometry.free_via(pad.GetNetname(),end):continue
             if not geometry.free_track(pad.GetNetname(),pcbnew.F_Cu,pos,end,.15):continue
-            t=pcbnew.PCB_TRACK(board)
-            t.SetStart(pos);t.SetEnd(end);t.SetWidth(pc.mm(.15));t.SetLayer(pcbnew.F_Cu);t.SetNet(pad.GetNet())
-            t.SetLocked(True);board.Add(t);geometry.add(t)
-            v=pcbnew.PCB_VIA(board)
-            v.SetPosition(end);v.SetWidth(pc.mm(.5));v.SetDrill(pc.mm(.3))
-            v.SetLayerPair(pcbnew.F_Cu,pcbnew.B_Cu);v.SetNet(pad.GetNet())
-            v.SetLocked(True);board.Add(v);geometry.add(v)
+            for t in pc.add_track(board,pad.GetNet(),pcbnew.F_Cu,(pos,end),.15,locked=True):
+                geometry.add(t)
+            geometry.add(pc.add_via(board,pad.GetNet(),end,.5,.3,locked=True))
             print(f'U1.{pad.GetNumber()} {pad.GetNetname()} -> {pc.to_mm(end.x):.3f},{pc.to_mm(end.y):.3f}')
             break
         else:failed.append((pad.GetNumber(),pad.GetNetname()))

@@ -266,9 +266,6 @@ def build():
     project.write_text(project_text)
     print(f"saved {pc.PCB}: {len(list(board.GetFootprints()))} footprints, "
           f"{board.GetNetCount()} nets")
-    import json
-    with open('/tmp/ailink-v04-placement.json','w') as f:
-        json.dump(PLACEMENT,f,indent=2)
     return board
 
 

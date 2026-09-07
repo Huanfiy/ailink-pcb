@@ -2,7 +2,6 @@
 """Lock the short HSE island on the front, without signal vias."""
 import pcbnew
 import pcb_common as pc
-from route_usb import add_track, pad_pos
 from product_config import CLOCK_NETS
 
 
@@ -13,11 +12,10 @@ def main():
     for item in old_tracks:
         if item.GetNetname() in names:
             board.Remove(item)
-    nets = board.GetNetsByName()
     def pad(ref, pin):
-        return pad_pos(board, ref, pin)
+        return pc.pad_pos(board, ref, pin)
     def trace(name, points):
-        add_track(board, nets[name], pcbnew.F_Cu, points, .2)
+        pc.add_track(board, name, pcbnew.F_Cu, points, .2)
     trace('OSC_IN', [pad('U1','5'), (125.6,112.75), (126.5,111.85)])
     trace('OSC_IN', [pad('X1','3'), pad('C10','1')])
     trace('OSC_OUT', [pad('U1','6'), (125.3,112.25), (125.3,107.89), pad('R6','2')])

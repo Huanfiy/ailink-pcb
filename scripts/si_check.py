@@ -113,13 +113,10 @@ def _collect_net(board, netname):
 
 
 def _pad_xy(board, ref, pin):
-    for fp in board.GetFootprints():
-        if fp.GetReference() != ref:
-            continue
-        for pad in fp.Pads():
-            if str(pad.GetNumber()) == str(pin):
-                return _mm(pad.GetPosition())
-    return None
+    try:
+        return pc.pad_pos(board, ref, pin, digits=None)
+    except KeyError:
+        return None
 
 
 def _split_segments(segs, extra_pts):

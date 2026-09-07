@@ -11,7 +11,6 @@ from pcb_common import mm,pt
 from product_config import (X0,Y0,X1,Y1,CLOCK_NETS,HSE_BODY,PLANE_NETS,
                             USB_REAR_GND_WINDOW,contains,inflate)
 
-LAYERS = (pcbnew.F_Cu,pcbnew.B_Cu)
 COPPER_LAYERS = (pcbnew.F_Cu,pcbnew.In1_Cu,pcbnew.In2_Cu,pcbnew.B_Cu)
 VIA_D,DRILL,WIDTH = .5,.3,.2
 # Via centre keep-out around the crystal: body plus one via radius.
@@ -179,16 +178,9 @@ def main():
                 path=next((path for path in paths if all(
                     geometry.free_track(net,pad_layer(pad),a,b) for a,b in zip(path,path[1:]))),None)
                 if path is None:continue
-                for a,b in zip(path,path[1:]):
-                    if a==b:continue
-                    track=pcbnew.PCB_TRACK(board)
-                    track.SetStart(a);track.SetEnd(b)
-                    track.SetLayer(pad_layer(pad));track.SetWidth(mm(WIDTH));track.SetNet(pad.GetNet())
-                    board.Add(track);geometry.add(track)
-                via=pcbnew.PCB_VIA(board)
-                via.SetPosition(end);via.SetWidth(mm(VIA_D));via.SetDrill(mm(DRILL))
-                via.SetLayerPair(*LAYERS);via.SetNet(pad.GetNet())
-                board.Add(via);geometry.add(via)
+                for track in pc.add_track(board,pad.GetNet(),pad_layer(pad),path,WIDTH):
+                    geometry.add(track)
+                geometry.add(pc.add_via(board,pad.GetNet(),end,VIA_D,DRILL))
                 added+=1
                 print(f'{net} {pad.GetParentFootprint().GetReference()}.{pad.GetNumber()} -> '
                       f'({pc.to_mm(end.x):.3f},{pc.to_mm(end.y):.3f})')

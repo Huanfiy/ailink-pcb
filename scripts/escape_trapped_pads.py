@@ -76,14 +76,9 @@ def main():
                 path=next((path for path in paths if all(
                     geometry.free_track(net,pad_layer(pad),a,b,.15) for a,b in zip(path,path[1:]))),None)
                 if path is None:continue
-                for a,b in zip(path,path[1:]):
-                    if a==b:continue
-                    t=pcbnew.PCB_TRACK(board);t.SetStart(a);t.SetEnd(b)
-                    t.SetLayer(pad_layer(pad));t.SetWidth(pc.mm(.15));t.SetNet(pad.GetNet())
-                    t.SetLocked(True);board.Add(t);geometry.add(t)
-                v=pcbnew.PCB_VIA(board);v.SetPosition(end);v.SetWidth(pc.mm(.5));v.SetDrill(pc.mm(.3))
-                v.SetLayerPair(pcbnew.F_Cu,pcbnew.B_Cu);v.SetNet(pad.GetNet());v.SetLocked(True)
-                board.Add(v);geometry.add(v)
+                for t in pc.add_track(board,pad.GetNet(),pad_layer(pad),path,.15,locked=True):
+                    geometry.add(t)
+                geometry.add(pc.add_via(board,pad.GetNet(),end,.5,.3,locked=True))
                 ref=pad.GetParentFootprint().GetReference()+'.'+pad.GetNumber()
                 print(f'{net} {ref}: {x:.4f},{y:.4f} '+('VIPPO required' if capped else 'ordinary dogbone'),flush=True)
                 if capped:special.append((ref,x,y))
