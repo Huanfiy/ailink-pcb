@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 import pcbnew
 import pcb_common as pc
-from product_config import X0, Y0, X1, Y1, HEADER_Y, J2_PINS, j2_row
+from product_config import X0, Y0, X1, Y1, HEADER_Y, J2_PINS, REVISION, j2_row
 
 NS = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', NS)
@@ -28,7 +28,7 @@ def main():
     board = pcbnew.LoadBoard(pc.PCB)
     root = ET.Element('{'+NS+'}svg', width='1600', height='780', viewBox='0 0 1600 780',
                       role='img', attrib={'aria-labelledby': 'title desc'})
-    element(root, 'title', id='title').text = 'ailink v0.4 A 方案 · 实际 PCB 正反面布局'
+    element(root, 'title', id='title').text = f'ailink {REVISION} A 方案 · 实际 PCB 正反面布局'
     element(root, 'desc', id='desc').text = (
         '同一块 42×22 mm 四层产品板。USB 在左，2×6 夹板针在右。'
         '正面为双 UART 和逐针对齐的四颗通信灯；PWR、STATUS 在 USB 座两侧。'
@@ -37,7 +37,7 @@ def main():
     element(root, 'style').text = 'text{font-family:"Noto Sans CJK SC","DejaVu Sans",sans-serif}'
     element(root, 'rect', width=1600, height=780, fill='#f5f7fa')
     label(root, 60, 45, 'ailink · 产品版布局', 29, '#172838', font_weight=700)
-    label(root, 1530, 44, 'v0.4 / 42 × 22 mm / 无用户按键', 17, anchor='end')
+    label(root, 1530, 44, f'{REVISION} / 42 × 22 mm / 无用户按键', 17, anchor='end')
     copper = '#cfb574'
     bodies = {'U1': (10,10), 'U2': (5.3,5.2), 'U3': (1.7,2.9),
               'D7': (4.5,2.6), 'D8': (3.2,2.7), 'F1': (3.2,1.6), 'X1': (3.2,2.5)}

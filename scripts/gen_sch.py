@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import sch_writer
 import symlib
-from product_config import J2_PINS
+from product_config import FP, J2_PINS, REVISION, product_footprint_id
 from sch_writer import SchDoc
 
 HW = os.environ.get('AILINK_HW', os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware"))
@@ -17,29 +17,6 @@ G = 1.27
 def g(n):
     """Grid units -> mm."""
     return round(n * G, 4)
-
-
-# ---------------------------------------------------------------- footprints
-FP = {
-    "R": "Resistor_SMD:R_0402_1005Metric",
-    "C": "Capacitor_SMD:C_0603_1608Metric",
-    "MCU": "Package_QFP:LQFP-64_10x10mm_P0.5mm",
-    "FLASH": "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm",
-    "LDO": "Package_TO_SOT_SMD:SOT-23-5",
-    "SOT236": "Package_TO_SOT_SMD:SOT-23-6",
-    "TVS": "Diode_SMD:D_SMA",
-    "FUSE": "Fuse:Fuse_1206_3216Metric",
-    "FB": "Inductor_SMD:L_0603_1608Metric",
-    "XTAL": "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
-    "USBC": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
-    "H1X4": "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical",
-    "RGB": "LED_SMD:LED_RGB_1210",
-    "LED": "LED_SMD:LED_0603_1608Metric",
-    "TP": "TestPoint:TestPoint_Pad_D1.0mm",
-    "STRADDLE": "ailink:Header_2x06_P2.54mm_Straddle",
-    "SERVICE": "ailink:Service_2x03_P1.27mm",
-    "CONSOLE": "ailink:Console_1x03_P1.27mm",
-}
 
 
 def _ps(mpn, spec):
@@ -112,7 +89,7 @@ for i in range(10, 14):
 
 def build():
     d = SchDoc("ailink - USB debug bridge (2x CDC + CMSIS-DAP + 8x GPIO + DFU)",
-               paper="A2", rev="v0.4", company="ailink project",
+               paper="A2", rev=REVISION, company="ailink project",
                date="2026-09-05")
 
     _place = d.place
@@ -121,7 +98,6 @@ def build():
         """Inject MPN/Spec from PARTS when the caller does not pass props."""
         if props is None:
             props = PARTS.get(ref)
-        from gen_product_lib import product_footprint_id
         if kwargs.get('footprint'):
             kwargs['footprint'] = product_footprint_id(kwargs['footprint'])
         return _place(ref, *args, props=props, **kwargs)

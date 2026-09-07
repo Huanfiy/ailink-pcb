@@ -13,7 +13,7 @@ from pcb_common import mm, pt
 
 import pcbnew
 
-from product_config import X0, Y0, X1, Y1, CORNER_R, HEADER_Y, J2_PINS
+from product_config import X0, Y0, X1, Y1, CORNER_R, HEADER_Y, J2_PINS, REVISION
 
 # Fixed anchors implement the approved front layout; B coordinates are front projections.
 PLACEMENT = {
@@ -133,7 +133,7 @@ def place_all(comps):
 SILK_TEXTS = [
     ("ailink", 109.4,104,1.1,"F"), ("PWR",104,101.3,.7,"F"),
     ("STATUS",104,121.4,.7,"F"), ("IO 3V3",109,120,.7,"F"),
-    ("UART",135,101.3,.8,"F"), ("v0.4",128,120.5,.7,"F"),
+    ("UART",135,101.3,.8,"F"), (REVISION,128,120.5,.7,"F"),
 ]
 PIN_LABELS = []
 for face, dx in (("F", -7), ("B", -3.1)):

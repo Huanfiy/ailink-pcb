@@ -68,9 +68,11 @@ kicad-cli pcb render --rotate '145,0,205' --zoom .85 --perspective --quality hig
 python3 scripts/render_layout.py
 python3 - "$status" <<'PY'
 import hashlib,json,pathlib,sys
+sys.path.insert(0,'scripts')
+from product_config import REVISION
 files=['hardware/ailink.kicad_sch','hardware/ailink.kicad_pcb','hardware/ailink.kicad_pro']
 pathlib.Path('outputs/verification.json').write_text(json.dumps({
-    'revision':'v0.4', 'digital_checks_passed':sys.argv[1]=='0',
+    'revision':REVISION, 'digital_checks_passed':sys.argv[1]=='0',
     'production_qualified':False,
     'sha256':{p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest() for p in files}
 },indent=2)+'\n')

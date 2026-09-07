@@ -5,22 +5,19 @@ J2 uses two independent rows of surface pads on opposite board faces.
 The nominal 0.64 mm square pins need a centring fixture on a 1.6 mm PCB;
 mechanical qualification remains a sample-assembly operation.
 """
+import os
 from pathlib import Path
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from product_config import FP, product_footprint_id
 
 ROOT = Path(__file__).resolve().parents[1]
 LIB = ROOT / "hardware/lib/ailink.pretty"
 
 
-def product_footprint_id(source):
-    """Product variants keep the manufacturer's pad/courtyard geometry."""
-    if source.startswith('ailink:'):
-        return source
-    return 'ailink:Product_' + source.split(':', 1)[1]
-
-
 def product_variants():
     import pcbnew
-    from gen_sch import FP
     sources = set(FP.values()) | {'Capacitor_SMD:C_0402_1005Metric'}
     for source in sorted(sources):
         if source.startswith('ailink:'):

@@ -26,6 +26,37 @@ def j2_row(pin):
     """HEADER_Y index of a J2 pin (pins 1/2 share the first row)."""
     return (pin - 1) // 2
 
+
+# Footprint sources by role. Library parts are re-published as ailink:Product_*
+# variants by gen_product_lib so assembly outlines live on Fab, not silk.
+FP = {
+    "R": "Resistor_SMD:R_0402_1005Metric",
+    "C": "Capacitor_SMD:C_0603_1608Metric",
+    "MCU": "Package_QFP:LQFP-64_10x10mm_P0.5mm",
+    "FLASH": "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm",
+    "LDO": "Package_TO_SOT_SMD:SOT-23-5",
+    "SOT236": "Package_TO_SOT_SMD:SOT-23-6",
+    "TVS": "Diode_SMD:D_SMA",
+    "FUSE": "Fuse:Fuse_1206_3216Metric",
+    "FB": "Inductor_SMD:L_0603_1608Metric",
+    "XTAL": "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
+    "USBC": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
+    "H1X4": "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical",
+    "RGB": "LED_SMD:LED_RGB_1210",
+    "LED": "LED_SMD:LED_0603_1608Metric",
+    "TP": "TestPoint:TestPoint_Pad_D1.0mm",
+    "STRADDLE": "ailink:Header_2x06_P2.54mm_Straddle",
+    "SERVICE": "ailink:Service_2x03_P1.27mm",
+    "CONSOLE": "ailink:Console_1x03_P1.27mm",
+}
+
+
+def product_footprint_id(source):
+    """Project-library id of a footprint; product variants keep the vendor geometry."""
+    if source.startswith('ailink:'):
+        return source
+    return 'ailink:Product_' + source.split(':', 1)[1]
+
 # Protected copper regions. Callers inflate these by their own clearance; the
 # base rectangles are the physical objects, not routing margins.
 USB_REAR_GND_WINDOW = (105.5, 106.6, 113.6, 115.3)   # L3 GND pour under rear USB (D1 side)
