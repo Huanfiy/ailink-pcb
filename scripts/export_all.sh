@@ -1,15 +1,31 @@
 #!/usr/bin/env bash
 # Review exports are available even on failure. Fabrication exports require clean checks.
+#
+# Usage: scripts/export_all.sh [review|fabrication] [--save]
+# Zones are refilled for DRC and exports on a temporary copy of hardware/; the
+# source board is left untouched unless --save is given, which writes the
+# refilled board back (the previous default).
 set -euo pipefail
 cd "$(dirname "$0")/.."
-SCH=hardware/ailink.kicad_sch
-PCB=hardware/ailink.kicad_pcb
 OUT=outputs
-MODE="${1:-review}"
-if [[ "$MODE" != review && "$MODE" != fabrication ]]; then
-    echo 'Usage: scripts/export_all.sh [review|fabrication]' >&2
-    exit 2
+MODE=review
+SAVE=0
+for arg in "$@"; do
+    case "$arg" in
+        review|fabrication) MODE=$arg ;;
+        --save) SAVE=1 ;;
+        *) echo 'Usage: scripts/export_all.sh [review|fabrication] [--save]' >&2; exit 2 ;;
+    esac
+done
+WORK=hardware
+if (( ! SAVE )); then
+    WORK=$(mktemp -d /tmp/ailink-export.XXXXXX)
+    trap 'rm -rf "$WORK"' EXIT
+    cp -a hardware/. "$WORK/"
 fi
+SCH=$WORK/ailink.kicad_sch
+PCB=$WORK/ailink.kicad_pcb
+export AILINK_HW="$WORK" AILINK_PCB="$PCB"
 mkdir -p "$OUT/renders" "$OUT/pcb-pdf"
 # Remove stale fabrication archives before evaluating the current revision.
 rm -f "$OUT/ailink-fab.zip" "$OUT/ailink-gerbers.zip" "$OUT/FAB-NOTES.md"

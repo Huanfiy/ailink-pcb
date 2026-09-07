@@ -44,7 +44,7 @@ python3 scripts/si_check.py hardware/ailink.kicad_pcb
 
 - **只检查 DRC**：按 [DRC 复查入口](docs/error/2026-09-05-kicad-drc-routing-constraint-assessment.md#8-复查入口与证据文件) 执行；不加 `--save-board`，避免保存到主 PCB。
 - **重建候选**：`bash scripts/run_pipeline.sh` 默认在 `/tmp` 从生成逻辑重建，不是主 PCB 的增量续布。
-- **评审导出（会改源文件）**：`bash scripts/export_all.sh review` 会重填并保存主 PCB、刷新布局 SVG、移除旧制造包；运行前保留基线，运行后审查差异。检查失败返回非零。
+- **评审导出**：`bash scripts/export_all.sh review` 在临时副本上重填铜并运行全部检查与导出，源 PCB 不被改写；加 `--save` 才会把重填结果写回主 PCB（写回前保留基线、写回后审查差异）。会刷新布局 SVG、移除旧制造包；检查失败返回非零。
 - **制造导出**：`bash scripts/export_all.sh fabrication` 仅在全部数字门禁通过后生成制造包。
 
 ## 4. 修改与验收底线
