@@ -62,7 +62,6 @@ _C18P = _ps("C1608C0G1H180J", "0603 C0G/NP0 50V")
 _C10N = _ps("CC0603KRX7R9BB103", "0603 X7R 50V")
 _SRV = _ps("SRV05-4.TCT", "SOT-23-6 4ch ESD, C~3pF/线")
 _HDR14 = _ps("PinHeader 1x4 2.54 直针", "PinHeader 1x4 2.54 直针")
-_SW = _ps("C&K PTS810SJK250SMTRLFS", "4.2x3.2轻触")
 
 PARTS = {
     "U1": _ps("STM32F446RET6", "LQFP64"),
@@ -147,7 +146,6 @@ def build():
     S_C1X3 = d.use_symbol("Connector_Generic", "Conn_01x03")
     S_C1X4 = d.use_symbol("Connector_Generic", "Conn_01x04")
     S_C2X3 = d.use_symbol("Connector_Generic", "Conn_02x03_Odd_Even")
-    S_C2X5 = d.use_symbol("Connector_Generic", "Conn_02x05_Odd_Even")
     S_C2X6 = d.use_symbol("Connector_Generic", "Conn_02x06_Odd_Even")
     S_W25 = d.use_symbol(
         "Memory_Flash", "W25Q32JVSS",

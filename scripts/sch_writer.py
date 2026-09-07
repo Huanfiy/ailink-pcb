@@ -53,7 +53,7 @@ class Instance:
 
 
 class SchDoc:
-    def __init__(self, title, paper="A2", rev="v0.3", company="", date=""):
+    def __init__(self, title, paper="A2", rev="", company="", date=""):
         self.uuid = new_uuid()
         self.title, self.paper, self.rev = title, paper, rev
         self.company, self.date = company, date

@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Post-route step tool. Usage: post_route.py [clear-usb|zones]"""
+"""Create the inner planes. Usage: post_route.py zones-inner
+
+L2 is a continuous GND plane. L3 carries +3V3 plus a dedicated GND window
+under the rear USB segment; the explicit cutout keeps Specctra export honest.
+"""
 import os
 import sys
 
@@ -11,16 +15,6 @@ import pcbnew
 
 from product_config import X0 as BX0, Y0 as BY0, X1 as BX1, Y1 as BY1
 X0,Y0,X1,Y1=BX0+.3,BY0+.3,BX1-.3,BY1-.3
-
-
-def clear_usb():
-    board = pcbnew.LoadBoard(pc.PCB)
-    doomed = [t for t in board.GetTracks()
-              if t.GetNetname() in ("USB_DP", "USB_DM")]
-    for t in doomed:
-        board.Remove(t)
-    pcbnew.SaveBoard(pc.PCB, board)
-    print(f"removed {len(doomed)} USB tracks")
 
 
 def add_zone(board, netname, layer, prio, polygon=None, hole=None):
@@ -63,27 +57,7 @@ def zones_inner():
     print("inner plane zones added and filled")
 
 
-def zones_outer():
-    board = pcbnew.LoadBoard(pc.PCB)
-    add_zone(board, "GND", pcbnew.F_Cu, 0)
-    add_zone(board, "GND", pcbnew.B_Cu, 0)
-    filler = pcbnew.ZONE_FILLER(board)
-    filler.Fill(board.Zones())
-    pcbnew.SaveBoard(pc.PCB, board)
-    print("outer GND pours added and filled")
-
-
-def zones_outer_remove():
-    board = pcbnew.LoadBoard(pc.PCB)
-    doomed = [z for z in board.Zones()
-              if z.GetLayer() in (pcbnew.F_Cu, pcbnew.B_Cu)]
-    for z in doomed:
-        board.Remove(z)
-    pcbnew.SaveBoard(pc.PCB, board)
-    print(f"removed {len(doomed)} outer zones")
-
-
 if __name__ == "__main__":
-    {"clear-usb": clear_usb, "zones-inner": zones_inner,
-     "zones-outer": zones_outer,
-     "zones-outer-remove": zones_outer_remove}[sys.argv[1]]()
+    if sys.argv[1:] != ["zones-inner"]:
+        raise SystemExit(__doc__.splitlines()[0])
+    zones_inner()
