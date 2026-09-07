@@ -189,7 +189,7 @@
 6. 明确 L3 的信号走廊和电源连接区域，保护 USB 背面参考区与 L2 地参考。
 7. 以完整局部器件组恢复连通为目标，不接受仅把未连接问题转移到其他网络的方案。
 
-如果移动 MCU、晶振岛或相关器件，应同步检查 `product_config.py`、`fanout_product.py`、`astar_router.py`、`check_product.py` 等中的坐标和禁布区域。不能移动实际器件后仍用旧区域进行保护或验收。
+如果移动 MCU、晶振岛或相关器件，保护区域坐标只需在 `product_config.py` 一处更新（`HSE_BODY`、`USB_REAR_GND_WINDOW`、`MCU_CENTER`），扇出、网格路由、检查与 DSN 导出都从它按各自边距派生；`gen_pcb.PLACEMENT` 中对应器件的位置仍须同步。不能移动实际器件后仍用旧区域进行保护或验收。
 
 ### 阶段 B：有针对性地优化局部工艺
 
@@ -222,11 +222,11 @@
 - `outputs/netlist-check.txt`：101 个网络的映射与拓扑断言。
 - `outputs/product-check.txt`：56 项产品检查。
 - `outputs/si-report.txt`：USB 双向路径与几何边界。
-- `outputs/routing-tests.txt`：8 项脚本回归测试。
+- `outputs/routing-tests.txt`：脚本回归测试（记录本文时为 8 项；`tests/` 现为 27 项）。
 - `outputs/cleanup-check.txt`：清理脚本在当前板上的幂等检查，0 个待删除冗余铜对象。
 - `outputs/verification.json`：源文件散列与数字检查状态。
 - `outputs/export.log`：制造模式执行后因检查失败而停止输出的记录。
-- `scripts/gen_pcb.py`、`scripts/fanout_mcu_product.py`、`scripts/fanout_product.py`、`scripts/astar_router.py`、`scripts/finish_routes.py`、`scripts/cleanup_routes.py`：相关实现。
+- `scripts/product_config.py`（保护区域与网络集合）、`scripts/gen_pcb.py`、`scripts/fanout_mcu_product.py`、`scripts/fanout_product.py`、`scripts/grid_router.py`、`scripts/finish_routes.py`、`scripts/cleanup_routes.py`：相关实现。
 
 ### 后续复查命令
 
