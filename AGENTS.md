@@ -1,6 +1,6 @@
 # AGENTS.md — ailink-pcb
 
-适用于整个仓库。首轮读本文建立概貌，再按任务查索引；不要默认遍历大体积 KiCad 文件、生成物或历史评审。
+适用于整个仓库。首轮读本文建立概貌，再按任务查索引；不要默认遍历大体积 KiCad 文件或生成物。
 
 ## 1. 项目概貌
 
@@ -25,7 +25,7 @@ ailink 是基于 STM32F446RET6 的 KiCad 硬件工程，提供 USB-C 双 UART、
 | 查看本地检查证据 | [outputs/](outputs/)：检查报告、图纸、BOM；[verification.json](outputs/verification.json) 记录源文件 SHA-256 与检查状态 |
 | 修改或新增文档 | 先读 [docs-rules.md](docs-rules.md)：记录归属、落档门槛与清理规则 |
 
-`outputs/` 被 Git 忽略，新检出可能不存在，不能把旧报告当作当前验证。[review/](review/) 和 [docs/plans/](docs/plans/) 中的 v0.3 材料仅供历史追溯，不作为 v0.4 验收依据。
+`outputs/` 被 Git 忽略，新检出可能不存在，不能把旧报告当作当前验证。v0.3 的评审记录、执行计划与一次性修补脚本已移出工作区，需要追溯时查 git 历史（`60fd433`、`b4a61da`），不作为 v0.4 验收依据。
 
 ## 3. 环境与常用命令
 

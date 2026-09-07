@@ -26,7 +26,6 @@ _autosave-*
 # 流水线产出不入库（本地生成即可）
 outputs/
 *.xml
-!hardware/ailink.net
 
 # 第三方二进制（自行下载到 tools/）
 tools/*.jar
