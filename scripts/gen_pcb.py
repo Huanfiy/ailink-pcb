@@ -13,7 +13,7 @@ from pcb_common import mm, pt
 
 import pcbnew
 
-from product_config import X0, Y0, X1, Y1, CORNER_R, HEADER_Y
+from product_config import X0, Y0, X1, Y1, CORNER_R, HEADER_Y, J2_PINS
 
 # Fixed anchors implement the approved front layout; B coordinates are front projections.
 PLACEMENT = {
@@ -136,10 +136,10 @@ SILK_TEXTS = [
     ("UART",135,101.3,.8,"F"), ("v0.4",128,120.5,.7,"F"),
 ]
 PIN_LABELS = []
-for i,label in enumerate(("ATX","ARX","GND","BTX","BRX","GND")):
-    PIN_LABELS.append(("J2",str(1+2*i),label,-7,0,"F"))
-for i,label in enumerate(("GND","CLK","DIO","nRST","3V3","5V")):
-    PIN_LABELS.append(("J2",str(2+2*i),label,-3.1,0,"B"))
+for face, dx in (("F", -7), ("B", -3.1)):
+    for pin, _net, pin_face, label in J2_PINS:
+        if pin_face == face:
+            PIN_LABELS.append(("J2", str(pin), label, dx, 0, face))
 for ref,start,dy in (("J3",0,2.1),("J4",4,-2.1)):
     for i in range(4):
         for side in ("F","B"):

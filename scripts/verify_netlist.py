@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import netlist
+from product_config import J2_PINS
 
 HW = os.environ.get('AILINK_HW', os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware"))
 SCH = os.path.join(HW, "ailink.kicad_sch")
@@ -133,11 +134,11 @@ def main():
     # ---- isolated output branches ----
     expect(nets, pad2net, "PWR_OUT_EN", "U1-40", "U4-3", "U5-3", "R38-1")
     expect(nets, pad2net, "GND", "R38-2", "U4-2", "U5-2", "R36-2", "R37-2")
-    for ref, supply, out, jpin, rref, cap in (
-            ("U4", "+3V3", "+3V3_OUT", 10, "R36", 15),
-            ("U5", "VBUS_P", "+5V_OUT", 12, "R37", 17)):
+    for ref, supply, out, rref, cap in (
+            ("U4", "+3V3", "+3V3_OUT", "R36", 15),
+            ("U5", "VBUS_P", "+5V_OUT", "R37", 17)):
         expect(nets, pad2net, supply, f"{ref}-1", f"C{cap}-1")
-        expect(nets, pad2net, out, f"{ref}-6", f"J2-{jpin}", f"C{cap+1}-1")
+        expect(nets, pad2net, out, f"{ref}-6", f"C{cap+1}-1")
         expect(nets, pad2net, f"{ref}_ILIM", f"{ref}-5", f"{rref}-1")
         expect(nets, pad2net, "GND", f"C{cap}-2", f"C{cap+1}-2")
         expect_nc(pad2net, f"{ref}-4")
@@ -145,16 +146,20 @@ def main():
         if ref in ("SW1", "SW2", "H1", "H2", "H3", "H4", "TP2", "TP3", "TP4", "TP5"):
             FAIL.append(f"obsolete component {ref} remains")
 
+    # ---- J2 straddle header: every pin, net and face from the product table ----
+    for pin, net, _face, _label in J2_PINS:
+        expect(nets, pad2net, net, f"J2-{pin}")
+
     # ---- target interfaces: MCU -> 220R -> ESD+connector ----
     series = [
-        # (mcu_net, r_ref, j_net, connector_pad, esd_pad)
-        ("T_SWCLK", "R10", "T_SWCLK_J", "J2-4", "D2-1"),
-        ("T_SWDIO", "R11", "T_SWDIO_J", "J2-6", "D2-3"),
-        ("T_nRESET", "R12", "T_nRESET_J", "J2-8", "D2-4"),
-        ("A_TX", "R13", "A_TX_J", "J2-1", "D3-1"),
-        ("A_RX", "R14", "A_RX_J", "J2-3", "D3-3"),
-        ("B_TX", "R15", "B_TX_J", "J2-7", "D3-4"),
-        ("B_RX", "R16", "B_RX_J", "J2-9", "D3-6"),
+        # (mcu_net, r_ref, j_net, connector_pad, esd_pad); J2 pads are asserted above
+        ("T_SWCLK", "R10", "T_SWCLK_J", None, "D2-1"),
+        ("T_SWDIO", "R11", "T_SWDIO_J", None, "D2-3"),
+        ("T_nRESET", "R12", "T_nRESET_J", None, "D2-4"),
+        ("A_TX", "R13", "A_TX_J", None, "D3-1"),
+        ("A_RX", "R14", "A_RX_J", None, "D3-3"),
+        ("B_TX", "R15", "B_TX_J", None, "D3-4"),
+        ("B_RX", "R16", "B_RX_J", None, "D3-6"),
         ("TGPIO0", "R17", "TGPIO0_J", "J3-1", "D4-1"),
         ("TGPIO1", "R18", "TGPIO1_J", "J3-2", "D4-3"),
         ("TGPIO2", "R19", "TGPIO2_J", "J3-3", "D4-4"),
@@ -168,9 +173,8 @@ def main():
     ]
     for mcu_net, r, j_net, j_pad, esd_pad in series:
         expect(nets, pad2net, mcu_net, f"{r}-1")
-        expect(nets, pad2net, j_net, f"{r}-2", j_pad, esd_pad)
-    expect(nets, pad2net, "GND", "J2-2", "J2-5", "J2-11",
-           "J5-3", "D2-2", "D3-2", "D4-2", "D5-2", "D6-2")
+        expect(nets, pad2net, j_net, f"{r}-2", esd_pad, *([j_pad] if j_pad else []))
+    expect(nets, pad2net, "GND", "J5-3", "D2-2", "D3-2", "D4-2", "D5-2", "D6-2")
     expect(nets, pad2net, "+3V3", "D2-5", "D3-5", "D4-5", "D5-5", "D6-5")
 
     # ---- J6 self-SWD ----

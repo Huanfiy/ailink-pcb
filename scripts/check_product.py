@@ -5,7 +5,11 @@ import sys
 import pcbnew
 import pcb_common as pc
 from fanout_product import collides
-from product_config import CLOCK_NETS,HEADER_Y,HSE_BODY,USB_NETS,USB_REAR_GND_WINDOW,contains
+from gen_pcb import PLACEMENT
+from product_config import (CLOCK_NETS,HEADER_Y,HSE_BODY,J2_PINS,USB_NETS,USB_REAR_GND_WINDOW,
+                            contains,j2_row)
+
+FACE={'F':pcbnew.F_Cu,'B':pcbnew.B_Cu}
 
 
 def main():
@@ -17,25 +21,24 @@ def main():
         checks+=1
         print(('PASS ' if ok else 'FAIL ')+message)
         if not ok:failures.append(message)
-    check(len(fps)==86,'86 product footprints')
+    components=pc.load_netlist()[0]
+    check(set(fps)==set(components),f'{len(components)} product footprints match the schematic')
     check(not any(ref.startswith(('SW','H')) for ref in fps),'No user buttons or mounting-hole footprints')
     check(board.GetCopperLayerCount()==4,'Four copper layers')
     check(abs(pc.to_mm(board.GetDesignSettings().GetBoardThickness())-1.6)<.001,'1.6 mm board thickness')
     for ref in ('D1','U2','U3','U4','U5','J5','J6'):
         check(fps[ref].GetLayer()==pcbnew.B_Cu,ref+' on back')
-    for ref,y in [('D9',102.8),('D8',119.2)]:
-        p=fps[ref].GetPosition()
-        check(fps[ref].GetLayer()==pcbnew.F_Cu and abs(pc.to_mm(p.x)-104)<.001
+    for ref in ('D9','D8'):
+        x,y,_,side=PLACEMENT[ref];p=fps[ref].GetPosition()
+        check(fps[ref].GetLayer()==FACE[side] and abs(pc.to_mm(p.x)-x)<.001
               and abs(pc.to_mm(p.y)-y)<.001,ref+' beside USB')
-    pin_nets=['A_TX_J','GND','A_RX_J','T_SWCLK_J','GND','T_SWDIO_J',
-              'B_TX_J','T_nRESET_J','B_RX_J','+3V3_OUT','GND','+5V_OUT']
     pads={int(p.GetNumber()):p for p in fps['J2'].Pads()}
-    check(set(pads)==set(range(1,13)),'J2 exactly 2 x 6 independently numbered pads')
-    for i,net in enumerate(pin_nets,1):
-        pad=pads[i];face=pcbnew.F_Cu if i%2 else pcbnew.B_Cu
-        check(pad.GetNetname()==net and pad.IsOnLayer(face)
-              and not pad.IsOnLayer(pcbnew.B_Cu if i%2 else pcbnew.F_Cu),f'J2.{i} {net} correct face')
-        check(abs(pc.to_mm(pad.GetPosition().y)-HEADER_Y[(i-1)//2])<.001,f'J2.{i} 2.54 mm pitch')
+    check(set(pads)=={pin for pin,*_ in J2_PINS},'J2 exactly 2 x 6 independently numbered pads')
+    for pin,net,face,_label in J2_PINS:
+        pad=pads[pin];other=FACE['B' if face=='F' else 'F']
+        check(pad.GetNetname()==net and pad.IsOnLayer(FACE[face])
+              and not pad.IsOnLayer(other),f'J2.{pin} {net} correct face')
+        check(abs(pc.to_mm(pad.GetPosition().y)-HEADER_Y[j2_row(pin)])<.001,f'J2.{pin} 2.54 mm pitch')
     for ref,pin in [('D10',1),('D11',3),('D12',7),('D13',9)]:
         check(fps[ref].GetLayer()==pcbnew.F_Cu and
               abs(fps[ref].GetPosition().y-pads[pin].GetPosition().y)<1000,

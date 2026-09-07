@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import sch_writer
 import symlib
+from product_config import J2_PINS
 from sch_writer import SchDoc
 
 HW = os.environ.get('AILINK_HW', os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "hardware"))
@@ -472,12 +473,8 @@ def build():
     series_r("R12", g(336), g(44), "T_nRESET", "T_nRESET_J")
     j2 = d.place("J2", S_C2X6, g(410), g(44), value="TARGET_2x6_STRADDLE",
                  footprint=FP["STRADDLE"], value_at=(g(410), g(60)))
-    for pin, net in {"1": "A_TX_J", "3": "A_RX_J", "7": "B_TX_J", "9": "B_RX_J",
-                     "4": "T_SWCLK_J", "6": "T_SWDIO_J", "8": "T_nRESET_J",
-                     "10": "+3V3_OUT", "12": "+5V_OUT"}.items():
-        auto_label(j2, pin, net, shape="passive")
-    for pin in ("2", "5", "11"):
-        auto_label(j2, pin, "GND", shape="passive")
+    for pin, net, _face, _label in J2_PINS:
+        auto_label(j2, str(pin), net, shape="passive")
     d2 = d.place("D2", S_SRV, g(340), g(58), value="SRV05-4",
                  footprint=FP["SOT236"], value_at=(g(352), g(67)),
                  props=PARTS["D2"])

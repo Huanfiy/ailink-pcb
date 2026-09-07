@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 import pcbnew
 import pcb_common as pc
-from product_config import X0, Y0, X1, Y1, HEADER_Y
+from product_config import X0, Y0, X1, Y1, HEADER_Y, J2_PINS, j2_row
 
 NS = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', NS)
@@ -121,10 +121,10 @@ def main():
             pos=item.GetPosition();px,py=project(pc.to_mm(pos.x),pc.to_mm(pos.y))
             label(root,px,py+3,item.GetText(),max(9,pc.to_mm(item.GetTextHeight())*SCALE),
                   '#e3edf0',anchor='middle')
-        labels=('ATX','ARX','GND','BTX','BRX','GND') if front else ('GND','CLK','DIO','nRST','3V3','5V')
-        for i,(y,name) in enumerate(zip(HEADER_Y,labels)):
-            px,py=project(151,y)
-            label(root,px,py+4,f'{i*2+(1 if front else 2):2}  {name}',12,'#334b60')
+        for pin,_net,face,name in J2_PINS:
+            if face!=side:continue
+            px,py=project(151,HEADER_Y[j2_row(pin)])
+            label(root,px,py+4,f'{pin:2}  {name}',12,'#334b60')
     label(root,60,483,'器件中心与焊盘来自当前 PCB；省略走线。本体、USB 外壳和夹板针为外观示意。',16)
     cards=[(60,'正面：使用与识别',[
         'USB 座上侧 PWR，下侧 RGB STATUS',

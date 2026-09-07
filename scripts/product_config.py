@@ -10,6 +10,22 @@ CORNER_R = 2.0
 MCU_CENTER = (118.5, 111.0)
 HEADER_Y = tuple(104.65 + 2.54 * i for i in range(6))
 
+# J2 2x6 straddle header, product.md §5.1: (pin, net, face, silk label).
+# Odd pins are the front row (UART), even pins the back row (SWD + power).
+J2_PINS = (
+    (1, 'A_TX_J', 'F', 'ATX'),      (2, 'GND', 'B', 'GND'),
+    (3, 'A_RX_J', 'F', 'ARX'),      (4, 'T_SWCLK_J', 'B', 'CLK'),
+    (5, 'GND', 'F', 'GND'),         (6, 'T_SWDIO_J', 'B', 'DIO'),
+    (7, 'B_TX_J', 'F', 'BTX'),      (8, 'T_nRESET_J', 'B', 'nRST'),
+    (9, 'B_RX_J', 'F', 'BRX'),      (10, '+3V3_OUT', 'B', '3V3'),
+    (11, 'GND', 'F', 'GND'),        (12, '+5V_OUT', 'B', '5V'),
+)
+
+
+def j2_row(pin):
+    """HEADER_Y index of a J2 pin (pins 1/2 share the first row)."""
+    return (pin - 1) // 2
+
 # Protected copper regions. Callers inflate these by their own clearance; the
 # base rectangles are the physical objects, not routing margins.
 USB_REAR_GND_WINDOW = (105.5, 106.6, 113.6, 115.3)   # L3 GND pour under rear USB (D1 side)
