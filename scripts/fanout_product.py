@@ -8,11 +8,16 @@ import math
 import pcbnew
 import pcb_common as pc
 from pcb_common import mm,pt
-from product_config import X0,Y0,X1,Y1
+from product_config import (X0,Y0,X1,Y1,CLOCK_NETS,HSE_BODY,PLANE_NETS,
+                            USB_REAR_GND_WINDOW,contains,inflate)
 
 LAYERS = (pcbnew.F_Cu,pcbnew.B_Cu)
 COPPER_LAYERS = (pcbnew.F_Cu,pcbnew.In1_Cu,pcbnew.In2_Cu,pcbnew.B_Cu)
 VIA_D,DRILL,WIDTH = .5,.3,.2
+# Via centre keep-out around the crystal: body plus one via radius.
+HSE_VIA_KEEPOUT = inflate(HSE_BODY,VIA_D/2)
+# Plane-side keep-out for +3V3 fanout vias: window plus antipad allowance.
+PLANE_HOLE_KEEPOUT = inflate(USB_REAR_GND_WINDOW,.4)
 
 
 def collides(a,b,clearance):
@@ -72,7 +77,7 @@ class Geometry:
 
     def free_via(self,net,point,allow_smd=()):
         x,y=pc.to_mm(point.x),pc.to_mm(point.y)
-        if net!='GND' and 125.75<x<129.45 and 109.4<y<112.6:return False
+        if net!='GND' and contains(HSE_VIA_KEEPOUT,x,y):return False
         if not (X0+.65<x<X1-.65 and Y0+.65<y<Y1-.65):return False
         if (x<X0+2 or x>X1-2) and (y<Y0+2 or y>Y1-2):
             hx=X0+2 if x<X0+2 else X1-2
@@ -93,12 +98,11 @@ class Geometry:
 
     def free_track(self,net,layer,a,b,width=WIDTH):
         shape=pcbnew.SHAPE_SEGMENT(a,b,mm(width))
-        if layer==pcbnew.F_Cu and net not in ('GND','OSC_IN','OSC_OUT','OSC_XO'):
-            crystal=pcbnew.SHAPE_RECT(mm(126),mm(109.65),mm(3.2),mm(2.7))
-            if collides(shape,crystal,0):return False
+        if layer==pcbnew.F_Cu and net!='GND' and net not in CLOCK_NETS:
+            if collides(shape,pc.rect_shape(HSE_BODY),0):return False
         if layer==pcbnew.In2_Cu and net!='GND':
-            usb=pcbnew.SHAPE_RECT(mm(105.5),mm(106.6),mm(8.1),mm(8.7))
-            if collides(shape,usb,.175):return False
+            # .175 = plane clearance so an L3 escape never touches the GND pour.
+            if collides(shape,pc.rect_shape(USB_REAR_GND_WINDOW),.175):return False
         return not any(name!=net and layer in shapes and collides(shape,shapes[layer],
                        .255 if item.GetClass()=='PAD' and item.GetAttribute()==pcbnew.PAD_ATTRIB_NPTH else .155)
                        for item,name,shapes in self.near(shape))
@@ -134,14 +138,14 @@ def connected_groups(geometry,net,with_zones=False):
 def on_plane(net,position):
     x,y=pc.to_mm(position.x),pc.to_mm(position.y)
     if net=='GND':return True
-    return not (105.1<x<114.0 and 106.2<y<115.7)
+    return not contains(PLANE_HOLE_KEEPOUT,x,y)
 
 
 def main():
     board=pcbnew.LoadBoard(pc.PCB)
     geometry=Geometry(board)
     added=0;failed=[]
-    for net in ('GND','+3V3'):
+    for net in PLANE_NETS:
         for group in connected_groups(geometry,net):
             if any((item.GetClass()=='PCB_VIA' or
                     (item.GetClass()=='PAD' and item.GetAttribute()==pcbnew.PAD_ATTRIB_PTH))

@@ -3,11 +3,12 @@
 import pcbnew
 import pcb_common as pc
 from route_usb import add_track, pad_pos
+from product_config import CLOCK_NETS
 
 
 def main():
     board = pcbnew.LoadBoard(pc.PCB)
-    names = ('OSC_IN', 'OSC_OUT', 'OSC_XO')
+    names = CLOCK_NETS
     old_tracks = list(board.GetTracks())
     for item in old_tracks:
         if item.GetNetname() in names:

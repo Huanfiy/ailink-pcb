@@ -27,6 +27,12 @@ def pt(x, y):
     return pcbnew.VECTOR2I(mm(x), mm(y))
 
 
+def rect_shape(rect):
+    """pcbnew.SHAPE_RECT for a product_config (x0, y0, x1, y1) rectangle."""
+    x0, y0, x1, y1 = rect
+    return pcbnew.SHAPE_RECT(mm(x0), mm(y0), mm(round(x1 - x0, 6)), mm(round(y1 - y0, 6)))
+
+
 def load_netlist():
     """Return (components, nets):
     components: ref -> {footprint, value, dnp}

@@ -10,12 +10,20 @@ import sys
 import pcbnew
 import pcb_common as pc
 from fanout_product import Geometry,connected_groups,pad_layer
+from product_config import PLANE_NETS,PROTECTED_NETS,USB_REAR_GND_WINDOW,contains,inflate
+
+# A via inside this rectangle cannot reach L3: same +0.25 mm as the grid router.
+L3_ACCESS_KEEPOUT=inflate(USB_REAR_GND_WINDOW,.25)
+
+
+def reaches_l3(x,y):
+    return not contains(L3_ACCESS_KEEPOUT,x,y)
 
 
 def inner_access(item):
     if item.GetClass()=='PCB_VIA' or (item.GetClass()=='PAD' and item.GetAttribute()==pcbnew.PAD_ATTRIB_PTH):
-        p=item.GetPosition();x,y=pc.to_mm(p.x),pc.to_mm(p.y)
-        return not (105.25<x<113.85 and 106.35<y<115.55)
+        p=item.GetPosition()
+        return reaches_l3(pc.to_mm(p.x),pc.to_mm(p.y))
     return item.GetClass()=='PCB_TRACK' and item.GetLayer()==pcbnew.In2_Cu
 
 
@@ -26,7 +34,7 @@ def main():
     args=parser.parse_args()
     board=pcbnew.LoadBoard(pc.PCB);geometry=Geometry(board);special=[]
     selected=args.nets or [n.GetNetname() for n in board.GetNetsByName().values()
-                             if n.GetNetname() not in ('','GND','+3V3','USB_DP','USB_DM','OSC_IN','OSC_OUT','OSC_XO')
+                             if n.GetNetname() not in ('',)+PLANE_NETS+PROTECTED_NETS
                              and not n.GetNetname().startswith('unconnected')]
     for net in selected:
         groups=connected_groups(geometry,net)
@@ -59,7 +67,7 @@ def main():
                             candidates.append((10+math.hypot(dx,dy),pad,end,True))
             for _,pad,end,capped in sorted(candidates,key=lambda c:c[0]):
                 x,y=pc.to_mm(end.x),pc.to_mm(end.y)
-                if 105.25<x<113.85 and 106.35<y<115.55:continue
+                if not reaches_l3(x,y):continue
                 allow=(pad.m_Uuid.AsString(),) if capped else ()
                 if not geometry.free_via(net,end,allow):continue
                 start=pad.GetPosition()

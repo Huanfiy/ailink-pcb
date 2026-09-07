@@ -5,10 +5,20 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pcb_common as pc
+import sexp
+from product_config import HSE_BODY, PLANE_NETS, USB_REAR_GND_WINDOW
 
 import pcbnew
 
 DSN = os.environ.get("AILINK_DSN", "/tmp/ailink.dsn")
+
+
+def dsn_keepout(name, layer, rect):
+    """Specctra rect: micrometres, Y axis flipped, corners as (x0 -y1 x1 -y0)."""
+    x0, y0, x1, y1 = (int(round(v * 1000)) for v in rect)
+    return [sexp.Sym('keepout'), name,
+            [sexp.Sym('rect'), sexp.Sym(layer), x0, -y1, x1, -y0]]
+
 
 board = pcbnew.LoadBoard(pc.PCB)
 ok = pcbnew.ExportSpecctraDSN(board, DSN)
@@ -28,18 +38,13 @@ for lay in (("In1.Cu",) if inner_signals else ("In1.Cu", "In2.Cu")):
     txt = txt.replace(f"(layer {lay} (type signal)",
                       f"(layer {lay} (type power)")
 # Single-pin NC nets must remain copper obstacles, without pointless fanout.
-import sexp
 tree = sexp.parse(txt)
 structure = sexp.find(tree, 'structure')
 if inner_signals:
-    structure.append([sexp.Sym('keepout'), 'USB_REAR_REFERENCE',
-                      [sexp.Sym('rect'), sexp.Sym('In2.Cu'),
-                       105500, -115300, 113600, -106600]])
+    structure.append(dsn_keepout('USB_REAR_REFERENCE', 'In2.Cu', USB_REAR_GND_WINDOW))
 # Reserve the crystal body projection for the already locked oscillator
 # circuit and its ground pads. Unrelated front traces must go around it.
-structure.append([sexp.Sym('keepout'), 'HSE_BODY',
-                  [sexp.Sym('rect'), sexp.Sym('F.Cu'),
-                   126000, -112350, 129200, -109650]])
+structure.append(dsn_keepout('HSE_BODY', 'F.Cu', HSE_BODY))
 network = sexp.find_all(tree, 'network')[0]
 unused = set()
 for net in list(sexp.find_all(network, 'net')):
@@ -59,7 +64,7 @@ for group in sexp.find_all(network, 'class'):
 # Through-hole sizes are absent from DSN; final hole checks belong to KiCad.
 for item in sexp.find_all(tree, 'wiring')[0][1:]:
     net = sexp.find(item, 'net')
-    if net and net[1] in ('GND', '+3V3'):
+    if net and net[1] in PLANE_NETS:
         kind = sexp.find(item, 'type')
         if kind:
             kind[1] = sexp.Sym('fix')

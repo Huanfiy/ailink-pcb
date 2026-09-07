@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pcb_common as pc
 from pcb_common import mm, pt
+from product_config import USB_NETS
 
 import pcbnew
 
@@ -62,7 +63,7 @@ def main():
     board = pcbnew.LoadBoard(pc.PCB)
     old_tracks = list(board.GetTracks())
     for t in old_tracks:
-        if t.GetNetname() in ("USB_DP","USB_DM"):
+        if t.GetNetname() in USB_NETS:
             board.Remove(t)
     nets=board.GetNetsByName()
     F,B=pcbnew.F_Cu,pcbnew.B_Cu
@@ -100,7 +101,7 @@ def main():
         add_via(board,nets["GND"],110,111)
         track("GND",B,[(110,111),pad_pos(board,"D1","2")],.25)
     for t in board.GetTracks():
-        if t.GetNetname() in (dp,dm): t.SetLocked(True)
+        if t.GetNetname() in USB_NETS: t.SetLocked(True)
     pcbnew.SaveBoard(pc.PCB,board)
     print("v0.4 USB F/B/F routes added; run DRC and SI before release")
 

@@ -12,6 +12,7 @@ import pcbnew
 import pcb_common as pc
 import astar_router as ar
 from fanout_product import Geometry,connected_groups
+from product_config import PLANE_NETS,POWER_WIDTH_NETS,PROTECTED_NETS
 
 
 def seeds(group,grid):
@@ -34,8 +35,8 @@ def seeds(group,grid):
 
 
 def join_net(board,net,step):
-    power=net in ('GND','+3V3')
-    ar.TRACK_W=.2 if net in ('GND','+3V3','+3V3_OUT','+5V_OUT','VBUS','VBUS_P','VDDA') else .15
+    power=net in PLANE_NETS
+    ar.TRACK_W=.2 if net in POWER_WIDTH_NETS else .15
     ar.set_step(step,.155)
     geometry=Geometry(board)
     groups=connected_groups(geometry,net,with_zones=power)
@@ -102,7 +103,7 @@ def main():
     if os.environ.get('AILINK_INNER_SIGNALS')=='1':ar.enable_inner_signals()
     board=pcbnew.LoadBoard(pc.PCB)
     selected=sys.argv[1:] or sorted(n.GetNetname() for n in board.GetNetsByName().values()
-                                  if n.GetNetname() not in ('','GND','+3V3','USB_DP','USB_DM','OSC_IN','OSC_OUT','OSC_XO')
+                                  if n.GetNetname() not in ('',)+PLANE_NETS+PROTECTED_NETS
                                   and not n.GetNetname().startswith('unconnected'))
     pending=selected
     for step in (.1,.05,.025):
@@ -116,7 +117,7 @@ def main():
     pcbnew.ZONE_FILLER(board).Fill(board.Zones())
     # New L3 signal escapes can split an otherwise connected 3.3 V pour.
     # Repair actual filled-plane groups, not merely nets that contain vias.
-    for net in ('GND','+3V3'):
+    for net in PLANE_NETS:
         if net in selected:
             continue
         for step in (.1,.05,.025):

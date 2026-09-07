@@ -5,16 +5,17 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pcb_common as pc
+from product_config import PLANE_NETS, PROTECTED_NETS
 
 import pcbnew
 
 SES = sys.argv[1] if len(sys.argv)>1 else "/tmp/ailink.ses"
 
 board = pcbnew.LoadBoard(pc.PCB)
-protected = {'USB_DP','USB_DM','OSC_IN','OSC_OUT','OSC_XO'}
+protected = set(PROTECTED_NETS)
 # Specctra sessions omit pre-existing fixed objects. Power fanouts are marked
 # fixed by export_dsn.py and therefore must be restored from the source board.
-fixed_nets = protected | {'GND', '+3V3'}
+fixed_nets = protected | set(PLANE_NETS)
 saved = []
 for t in board.GetTracks():
     if t.GetNetname() not in fixed_nets and not t.IsLocked():

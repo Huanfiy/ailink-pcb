@@ -5,7 +5,7 @@ import sys
 import pcbnew
 import pcb_common as pc
 from fanout_product import collides
-from product_config import HEADER_Y
+from product_config import CLOCK_NETS,HEADER_Y,HSE_BODY,USB_NETS,USB_REAR_GND_WINDOW,contains
 
 
 def main():
@@ -45,10 +45,10 @@ def main():
         check(len(ps)==4 and all(p.GetAttribute()==pcbnew.PAD_ATTRIB_PTH for p in ps),ref+' exactly four GPIO holes')
         check(bool(fps[ref].GetAttributes() & pcbnew.FP_DNP),ref+' header not populated')
     tracks=list(board.GetTracks())
-    clock={'OSC_IN','OSC_OUT','OSC_XO'}
+    clock=set(CLOCK_NETS)
     check(all(t.GetClass()!='PCB_VIA' and t.GetLayer()==pcbnew.F_Cu for t in tracks
               if t.GetNetname() in clock),'HSE all F.Cu, no signal vias')
-    crystal=pcbnew.SHAPE_RECT(pc.mm(126),pc.mm(109.65),pc.mm(3.2),pc.mm(2.7))
+    crystal=pc.rect_shape(HSE_BODY)
     foreign=[]
     for t in tracks:
         if t.GetNetname() in clock | {'GND'}:continue
@@ -61,7 +61,7 @@ def main():
     check(not foreign,'No unrelated front copper through crystal body: '+str(sorted(set(foreign))))
     check(not any(t.GetClass()!='PCB_VIA' and t.GetLayer()==pcbnew.In1_Cu for t in tracks),
           'L2 ground reference has no signal tracks')
-    window=pcbnew.SHAPE_RECT(pc.mm(105.5),pc.mm(106.6),pc.mm(8.1),pc.mm(8.7))
+    window=pc.rect_shape(USB_REAR_GND_WINDOW)
     bad=[]
     for t in tracks:
         if t.GetClass()=='PCB_VIA' or t.GetLayer()!=pcbnew.In2_Cu:continue
@@ -70,10 +70,10 @@ def main():
     check(not bad,'L3 rear USB reference has no crossing tracks: '+str(sorted(set(bad))))
     ground=[v for v in tracks if v.GetClass()=='PCB_VIA' and v.GetNetname()=='GND']
     for v in tracks:
-        if v.GetClass()!='PCB_VIA' or v.GetNetname() not in ('USB_DP','USB_DM'):continue
+        if v.GetClass()!='PCB_VIA' or v.GetNetname() not in USB_NETS:continue
         a=v.GetPosition()
         near=[math.hypot(g.GetPosition().x-a.x,g.GetPosition().y-a.y)/1e6 for g in ground
-              if 105.5<pc.to_mm(g.GetPosition().x)<113.6 and 106.6<pc.to_mm(g.GetPosition().y)<115.3]
+              if contains(USB_REAR_GND_WINDOW,pc.to_mm(g.GetPosition().x),pc.to_mm(g.GetPosition().y))]
         check(bool(near) and min(near)<=1.5,'USB return via within 1.5 mm at '+str((pc.to_mm(a.x),pc.to_mm(a.y))))
     in_pad=[]
     smd=[pad for fp in fps.values() for pad in fp.Pads() if pad.GetAttribute()==pcbnew.PAD_ATTRIB_SMD]

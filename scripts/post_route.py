@@ -13,7 +13,8 @@ from pcb_common import mm, pt
 
 import pcbnew
 
-from product_config import X0 as BX0, Y0 as BY0, X1 as BX1, Y1 as BY1
+from product_config import (X0 as BX0, Y0 as BY0, X1 as BX1, Y1 as BY1,
+                            USB_REAR_GND_WINDOW, inflate, rect_corners)
 X0,Y0,X1,Y1=BX0+.3,BY0+.3,BX1-.3,BY1-.3
 
 
@@ -48,9 +49,10 @@ def zones_inner():
         if z.GetLayer() in (pcbnew.In1_Cu,pcbnew.In2_Cu): board.Remove(z)
     add_zone(board, "GND", pcbnew.In1_Cu, 0)
     # Explicit cutout is also respected by Specctra; priorities alone are not.
+    # +0.3 mm keeps the 3.3 V pour one zone clearance away from the GND window.
     add_zone(board, "+3V3", pcbnew.In2_Cu, 0,
-             hole=[(105.2,106.3),(113.9,106.3),(113.9,115.6),(105.2,115.6)])
-    add_zone(board, "GND", pcbnew.In2_Cu, 1, [(105.5,106.6),(113.6,106.6),(113.6,115.3),(105.5,115.3)])
+             hole=rect_corners(inflate(USB_REAR_GND_WINDOW, .3)))
+    add_zone(board, "GND", pcbnew.In2_Cu, 1, rect_corners(USB_REAR_GND_WINDOW))
     filler = pcbnew.ZONE_FILLER(board)
     filler.Fill(board.Zones())
     pcbnew.SaveBoard(pc.PCB, board)

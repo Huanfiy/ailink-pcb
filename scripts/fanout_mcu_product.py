@@ -3,16 +3,17 @@
 import pcbnew
 import pcb_common as pc
 from fanout_product import Geometry,on_plane
-from product_config import MCU_CENTER
+from product_config import MCU_CENTER,PROTECTED_NETS
 
 
 def main():
     board=pcbnew.LoadBoard(pc.PCB)
     geometry=Geometry(board)
     fp=next(fp for fp in board.GetFootprints() if fp.GetReference()=='U1')
+    # Hand-routed nets keep their own escapes (OSC_XO has no U1 pad anyway).
     pads=[pad for pad in fp.Pads() if pad.GetNetname() and
           not pad.GetNetname().startswith('unconnected') and
-          pad.GetNetname() not in ('USB_DP','USB_DM','OSC_IN','OSC_OUT')]
+          pad.GetNetname() not in PROTECTED_NETS]
     # The crowded west USB/SPI row has fewer escape alternatives.
     pads.sort(key=lambda pad:(0 if 33<=int(pad.GetNumber())<=48 else 1,int(pad.GetNumber())))
     failed=[]

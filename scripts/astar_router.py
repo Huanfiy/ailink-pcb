@@ -19,12 +19,18 @@ from pcb_common import mm, pt
 import pcbnew
 
 STEP = 0.25
-from product_config import X0, Y0, X1, Y1, MCU_CENTER
+from product_config import (X0, Y0, X1, Y1, MCU_CENTER, HSE_BODY, PLANE_NETS,
+                            PROTECTED_NETS, USB_REAR_GND_WINDOW, contains, inflate)
 NX = int((X1 - X0) / STEP) + 1
 NY = int((Y1 - Y0) / STEP) + 1
 TRACK_W = 0.2
 CLR = 0.16
 VIA_D, VIA_DRILL = 0.5, 0.3
+# Grid cells whose centre falls inside these rectangles are never routable.
+# HSE: half of a 0.15 mm track so the edge of the trace stays off the body.
+HSE_TRACK_KEEPOUT = inflate(HSE_BODY, 0.075)
+# L3: window plus 0.25 mm (track half-width + clearance at the finest grid).
+L3_TRACK_KEEPOUT = inflate(USB_REAR_GND_WINDOW, 0.25)
 
 
 def set_step(step, clr):
@@ -60,13 +66,11 @@ class Grid:
     def track_allowed(self, layer, i, j):
         if self.blocked[layer][i][j]:return False
         if layer == F:
-            x,y=coord((i,j))
-            if 125.925 < x < 129.275 and 109.575 < y < 112.425:return False
+            if contains(HSE_TRACK_KEEPOUT, *coord((i,j))):return False
         if layer == 2:
-            x,y=coord((i,j))
             # Protect actual L3 GND plus 0.25 mm. Through vias may cross the
             # plane with antipads; F/B switching is distinct from routing L3.
-            if 105.25 < x < 113.85 and 106.35 < y < 115.55:return False
+            if contains(L3_TRACK_KEEPOUT, *coord((i,j))):return False
         return True
 
     def soft_disc(self, layer, x, y, r, netname):
@@ -165,8 +169,9 @@ class Grid:
         return True
 
 
-HARD_NETS = ("GND", "+3V3", "USB_DP", "USB_DM",
-             "OSC_IN", "OSC_XO", "OSC_OUT", "NRST", "MCU_SWDIO")
+# Never ripped up during soft-obstacle search: locked nets, planes, and the
+# two debug-critical MCU lines.
+HARD_NETS = PROTECTED_NETS + PLANE_NETS + ("NRST", "MCU_SWDIO")
 MCU_CX, MCU_CY = MCU_CENTER
 
 
