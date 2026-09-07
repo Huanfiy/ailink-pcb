@@ -12,7 +12,7 @@ if [[ "$MODE" != review && "$MODE" != fabrication ]]; then
 fi
 mkdir -p "$OUT/renders" "$OUT/pcb-pdf"
 # Remove stale fabrication archives before evaluating the current revision.
-rm -f "$OUT/ailink-fab.zip" "$OUT/ailink-gerbers.zip"
+rm -f "$OUT/ailink-fab.zip" "$OUT/ailink-gerbers.zip" "$OUT/FAB-NOTES.md"
 rm -rf "$OUT/gerbers" "$OUT/assembly"
 status=0
 python3 scripts/verify_netlist.py > "$OUT/netlist-check.txt" || status=1
@@ -72,6 +72,7 @@ if [[ "$MODE" == fabrication ]]; then
         --generate-map --map-format pdf --generate-report \
         --report-path "$OUT/gerbers/ailink-drill-report.txt" -o "$OUT/gerbers/" "$PCB"
     cp "$OUT/ailink-bom.csv" "$OUT/ailink-positions.csv" "$OUT/assembly/"
+    cp docs/design/fab-notes.md "$OUT/FAB-NOTES.md"
     (cd "$OUT" && zip -qr ailink-fab.zip gerbers assembly FAB-NOTES.md verification.json)
 fi
-echo "Current review exports written to $OUT/; see FAB-NOTES.md for physical qualification."
+echo "Current review exports written to $OUT/; see docs/design/fab-notes.md for physical qualification."

@@ -15,6 +15,7 @@ ailink 是基于 STM32F446RET6 的 KiCad 硬件工程，提供 USB-C 双 UART、
 | 查接口、电气、供电、验证边界 | [product.md](product.md)：现行产品基线，不从旧评审推导脚序 |
 | 查进度、阻塞、交付结论 | [DELIVERY.md](DELIVERY.md)：状态与检查、导出入口 |
 | 查外形、层叠、装配与正反面方向 | [设计说明](docs/design/ailink-compact-pcb-design.md)；[布局图](docs/design/layout-options.svg)、[排针剖面](docs/design/header-cross-section.svg) |
+| 查制造与装配条件 | [fab-notes.md](docs/design/fab-notes.md)：随制造包交付给板厂/装配方的条件，由 `export_all.sh fabrication` 复制进 ZIP |
 | 分析剩余布线与约束 | [DRC 评估](docs/error/2026-09-05-kicad-drc-routing-constraint-assessment.md)：问题证据、候选方案与验收条件；建议不等于已批准变更 |
 | 修改 KiCad 工程 | [hardware/](hardware/)：[原理图](hardware/ailink.kicad_sch)、[PCB](hardware/ailink.kicad_pcb)、[规则及项目配置](hardware/ailink.kicad_pro) |
 | 修改符号、封装与模型 | [hardware/lib/](hardware/lib/)；[符号表](hardware/sym-lib-table)、[封装表](hardware/fp-lib-table)；生成入口 [gen_product_lib.py](scripts/gen_product_lib.py) |

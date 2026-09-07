@@ -211,7 +211,7 @@
 - 孔与 SMT 焊盘关系、实际工艺能力得到检查；如改变工艺，制造说明同步更新。
 - 检查报告与实际源文件 SHA-256 一致，再允许生成制造包。
 
-数字检查通过仍不等同于量产就绪。实际叠层阻抗、D8 正式脚序、J2 夹板装配、电源/温升/反灌、USB 挂起电流和样机通信测试等边界仍按 `product.md`、`DELIVERY.md` 和 `outputs/FAB-NOTES.md` 执行。
+数字检查通过仍不等同于量产就绪。实际叠层阻抗、D8 正式脚序、J2 夹板装配、电源/温升/反灌、USB 挂起电流和样机通信测试等边界仍按 `product.md`、`DELIVERY.md` 和 `docs/design/fab-notes.md` 执行。
 
 ## 8. 复查入口与证据文件
 
@@ -226,7 +226,6 @@
 - `outputs/cleanup-check.txt`：清理脚本在当前板上的幂等检查，0 个待删除冗余铜对象。
 - `outputs/verification.json`：源文件散列与数字检查状态。
 - `outputs/export.log`：制造模式执行后因检查失败而停止输出的记录。
-- `outputs/design-notes.md`：本轮接受的修复和未解决事项。
 - `scripts/gen_pcb.py`、`scripts/fanout_mcu_product.py`、`scripts/fanout_product.py`、`scripts/astar_router.py`、`scripts/finish_routes.py`、`scripts/cleanup_routes.py`：相关实现。
 
 ### 后续复查命令
